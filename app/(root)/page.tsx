@@ -12,7 +12,7 @@ export default function Home() {
             <h1 className="h1-bold ">
               Host, Connect, Participate: All Bennett Events In One Place
             </h1>
-            <p className="p-regular-20 md:p-regular-24 ">See what's happening at Bennett University. Search and join in workshops, hackathons and more.</p>
+            <p className="p-regular-20 md:p-regular-24 ">See what&apos;s happening at Bennett University. Search and join in workshops, hackathons and more.</p>
             <Button className="button w-full sm:w-fit" size="lg" asChild>
               <Link href="#events">Explore Now</Link>
             </Button>

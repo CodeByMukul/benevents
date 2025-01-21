@@ -1,7 +1,7 @@
 import Link from "next/link"
 import MobileNav from "./MobileNav"
 import NavItems from "./NavItems"
-import {SignedIn,UserButton ,SignInButton,SignedOut } from "@clerk/nextjs"
+import {SignedIn,UserButton ,SignedOut } from "@clerk/nextjs"
 import { Button } from "../ui/button"
 import Image from "next/image"
 const Header = () => {
