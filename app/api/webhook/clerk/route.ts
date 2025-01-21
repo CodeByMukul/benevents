@@ -1,9 +1,13 @@
+
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
-import {  WebhookEvent } from '@clerk/nextjs/server'
+import { WebhookEvent } from '@clerk/nextjs/server'
 import { clerkClient } from '@clerk/nextjs/server'
-import {PrismaClient} from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { NextResponse } from 'next/server'
+
+// Move Prisma Client initialization outside the function to avoid creating new instances on each request.
+const client = new PrismaClient()
 
 export async function POST(req: Request) {
   const SIGNING_SECRET = process.env.SIGNING_SECRET
@@ -43,87 +47,85 @@ export async function POST(req: Request) {
     }) as WebhookEvent
   } catch (err) {
     console.error('Error: Could not verify webhook:', err)
-    return new Response('Error: Verification error', {
+    return new Response(`Error: Verification error - ${err.message}`, {
       status: 400,
     })
   }
 
-  // Do something with payload
-  // For this guide, log payload to console
-  //const { id } = evt.data
+  const clClient = await clerkClient() // Initialize clerkClient once for reuse
+
+  // Handle different event types
   const eventType = evt.type
   
-  const client=new PrismaClient();
-
-  if(eventType==='user.created'){
-    const {id, email_addresses, image_url, first_name, last_name , username}=evt.data;
-    const user={
-      clerkId:id||"",
-      email:email_addresses[0].email_address||"",
-      username:username!,
-      firstName:first_name||"",
-      lastName:last_name||"",
-      photo:image_url
+  if (eventType === 'user.created') {
+    const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
+    const user = {
+      clerkId: id || "",
+      email: email_addresses[0].email_address || "",
+      username: username || "",
+      firstName: first_name || "",
+      lastName: last_name || "",
+      photo: image_url
     }
-    const newUser=await client.user.create({
-      data:user
+
+    const newUser = await client.user.create({
+      data: user
     })
-    if(newUser){
-      const clClient=await clerkClient();
-      await clClient.users.updateUserMetadata(id,{
-        publicMetadata:{
-          userId:newUser.clerkId
+
+    if (newUser) {
+      await clClient.users.updateUserMetadata(id, {
+        publicMetadata: {
+          userId: newUser.clerkId
         }
       })
     }
-    console.log(newUser);
-    return NextResponse.json({msg:'OK',user:newUser})
+
+    console.log(newUser)
+    return NextResponse.json({ msg: 'OK', user: newUser })
   }
 
+  if (eventType === 'user.updated') {
+    const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
+    const updatedUser = {
+      email: email_addresses[0].email_address || '',
+      username: username || '',
+      firstName: first_name || '',
+      lastName: last_name || '',
+      photo: image_url
+    }
 
-if (eventType === 'user.updated') {
-  const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
-  const updatedUser = {
-    email: email_addresses[0].email_address || '',
-    username: username || '',
-    firstName: first_name || '',
-    lastName: last_name || '',
-    photo: image_url
-  };
+    const userToUpdate = await client.user.update({
+      where: { clerkId: id },
+      data: updatedUser
+    })
 
-  const userToUpdate = await client.user.update({
-    where: { clerkId: id },
-    data: updatedUser
-  });
+    if (userToUpdate) {
+      await clClient.users.updateUserMetadata(id, {
+        publicMetadata: {
+          userId: userToUpdate.clerkId
+        }
+      })
+    }
 
-  if (userToUpdate) {
-    const clClient = await clerkClient();
-    await clClient.users.updateUserMetadata(id, {
-      publicMetadata: {
-        userId: userToUpdate.clerkId
-      }
-    });
+    console.log(userToUpdate)
+    return NextResponse.json({ msg: 'User Updated', user: userToUpdate })
   }
 
-  console.log(userToUpdate);
-  return NextResponse.json({ msg: 'User Updated', user: userToUpdate });
-}
+  if (eventType === 'user.deleted') {
+    const { id } = evt.data;
 
-if (eventType === 'user.deleted') {
-  const { id } = evt.data;
+    const deletedUser = await client.user.delete({
+      where: { clerkId: id }
+    })
 
-  // Delete from your database
-  const deletedUser = await client.user.delete({
-    where: { clerkId: id }
-  });
+    if (deletedUser) {
+      await clClient.users.deleteUser(id || "")  // Delete user from Clerk as well
+    }
 
-  if (deletedUser) {
-    const clClient = await clerkClient();
-    await clClient.users.deleteUser(id||"");  // Delete user from Clerk as well
+    console.log(deletedUser)
+    return NextResponse.json({ msg: 'User Deleted', user: deletedUser })
   }
 
-  console.log(deletedUser);
-  return NextResponse.json({ msg: 'User Deleted', user: deletedUser });
-}
   return new Response('Webhook received', { status: 200 })
 }
+
