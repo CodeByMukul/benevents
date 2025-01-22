@@ -1,8 +1,6 @@
-
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
-import { clerkClient } from '@clerk/nextjs/server'
 import { PrismaClient } from '@prisma/client'
 import { NextResponse } from 'next/server'
 
@@ -52,7 +50,6 @@ export async function POST(req: Request) {
     })
   }
 
-  const clClient = await clerkClient() // Initialize clerkClient once for reuse
 
   // Handle different event types
   const eventType = evt.type
@@ -72,13 +69,6 @@ export async function POST(req: Request) {
       data: user
     })
 
-    if (newUser) {
-      await clClient.users.updateUserMetadata(id, {
-        publicMetadata: {
-          userId: newUser.clerkId
-        }
-      })
-    }
 
     console.log(newUser)
     return NextResponse.json({ msg: 'OK', user: newUser })
@@ -99,13 +89,6 @@ export async function POST(req: Request) {
       data: updatedUser
     })
 
-    if (userToUpdate) {
-      await clClient.users.updateUserMetadata(id, {
-        publicMetadata: {
-          userId: userToUpdate.clerkId
-        }
-      })
-    }
 
     console.log(userToUpdate)
     return NextResponse.json({ msg: 'User Updated', user: userToUpdate })
@@ -118,9 +101,6 @@ export async function POST(req: Request) {
       where: { clerkId: id }
     })
 
-    if (deletedUser) {
-      await clClient.users.deleteUser(id || "")  // Delete user from Clerk as well
-    }
 
     console.log(deletedUser)
     return NextResponse.json({ msg: 'User Deleted', user: deletedUser })
