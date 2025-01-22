@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
   // Handle different event types
   const eventType = evt.type
-  
+ try{
   if (eventType === 'user.created') {
     const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
     const user = {
@@ -71,9 +71,12 @@ export async function POST(req: Request) {
 
 
     console.log(newUser)
-    return NextResponse.json({ msg: 'OK', user: newUser })
+   return new Response("Errir",{status:909})
   }
-
+ }catch(e){
+   console.log(e);
+   return new Response("Errir",{status:909})
+ }
   if (eventType === 'user.updated') {
     const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
     const updatedUser = {
