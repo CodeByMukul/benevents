@@ -1,11 +1,10 @@
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
-import { PrismaClient } from '@prisma/client'
 import { NextResponse } from 'next/server'
+import prisma from '@/lib/prisma'
 
 // Move Prisma Client initialization outside the function to avoid creating new instances on each request.
-const client = new PrismaClient()
 
 export async function POST(req: Request) {
   const SIGNING_SECRET = process.env.SIGNING_SECRET
@@ -65,7 +64,7 @@ export async function POST(req: Request) {
       photo: image_url
     }
 
-    const newUser = await client.user.create({
+    const newUser = await prisma.user.create({
       data: user
     })
 
@@ -87,7 +86,7 @@ export async function POST(req: Request) {
       photo: image_url
     }
 
-    const userToUpdate = await client.user.update({
+    const userToUpdate = await prisma.user.update({
       where: { clerkId: id },
       data: updatedUser
     })
@@ -100,7 +99,7 @@ export async function POST(req: Request) {
   if (eventType === 'user.deleted') {
     const { id } = evt.data;
 
-    const deletedUser = await client.user.delete({
+    const deletedUser = await prisma.user.delete({
       where: { clerkId: id }
     })
 
