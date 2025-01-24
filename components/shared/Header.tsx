@@ -14,7 +14,7 @@ const Header = async() => {
   create=user?user.canCreateEvents:false;
   }
   return (
-    <header className="w-full border-b">
+    <header className="w-full border-b bg-primary-50">
       <div className="wrapper flex items-center justify-between">
         <Link href={"/"} className="w-36">
           <Image src="/assets/images/logo.svg" width={128} height={38} alt="Benevents"></Image>

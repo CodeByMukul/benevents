@@ -5,10 +5,13 @@ import { redirect } from "next/navigation";
 const page = async() => {
    const {sessionClaims}=await auth();
     const clerkId=sessionClaims?.sub ;
-    console.log(clerkId)
     try{
+      if(clerkId){
     const user=await prisma.user.findUnique({where:{clerkId}})
     if(!user||!user.canCreateEvents)redirect('/')
+      }else{
+        redirect('/')
+      }
     }catch(e){
       redirect('/')
     }
