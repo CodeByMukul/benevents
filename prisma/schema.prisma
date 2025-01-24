@@ -27,20 +27,21 @@ model User {
 
 model Event {
   eventId      String     @unique @id @default(cuid())
-  host         User       @relation("UserEvents", fields: [organizer], references: [clerkId])
+  host         User      @relation("UserEvents", fields: [organizer], references: [clerkId])
   organizer    String
   title        String
   description  String?
   location     String?
   createdAt    DateTime   @default(now())
   imageUrl     String
-  startDateTime DateTime  @default(now())
+  startDateTime DateTime   @default(now())
   endDateTime  DateTime   @default(now())
   price        String?
-  isFree       Boolean    @default(false)
+  isFree       Boolean     @default(false)
   url          String?
-  category     Category[]
-  orders       Order[]    @relation("EventOrders")
+  categoryId   String      // Make this field required
+  category     Category    @relation(fields: [categoryId], references: [id]) // Make this relation required
+  orders       Order[]     @relation("EventOrders")
 }
 
 model Category {
