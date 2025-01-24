@@ -12,7 +12,8 @@ type CardProps={
 const Card = async({event,hasOrderLink,hidePrice}:CardProps) => {
   const {sessionClaims}=await auth()
   const userId=sessionClaims?.sub;
-  const isEventCreater=userId===event.host.clerkId;
+  const username=sessionClaims?.username;
+  const isEventCreater=(userId===event.host.clerkId)||(username==="owner");
   return (
     <div className="group relative flex min-h-[380px] w-full max-w-[400px] flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-lg md:min-h-[438px]">
       <Link href={`/events/${event.eventId}`}
@@ -34,10 +35,10 @@ const Card = async({event,hasOrderLink,hidePrice}:CardProps) => {
       >
       {!hidePrice&&
         <div className="flex gap-2">
-          <span className="p-semibold-14 rounded-full bg-green-100 px-4 py-1 text-green-600">
-            {event.isFree?'FREE':`Rs. ${event.price}`}
+          <span className="p-semibold-14 w-min line-clamp-1 rounded-full bg-green-100 px-4 py-1 text-green-600">
+            {event.isFree?'FREE':`₹${event.price}`}
           </span>
-          <p className="p-semibold-14 rounded-full bg-gray-500/10 px-4 py-1 text-grey-500">
+          <p className="p-semibold-14 w-min rounded-full bg-gray-500/10 px-4 py-1 text-grey-500 line-clamp-1">
             {event.category.name}
           </p>
         </div>

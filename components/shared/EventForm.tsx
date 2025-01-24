@@ -20,18 +20,18 @@ import { Checkbox } from "../ui/checkbox";
 import prisma from "@/lib/prisma";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-const EventForm = ({clerkId,type}:{clerkId:string,type:"Create"|"Update"}) => {
+import { IEvent } from "@/types";
+const EventForm = ({clerkId,type,event}:{clerkId:string,type:"Create"|"Update",event?:IEvent}) => {
   const { isSignedIn, user, isLoaded } = useUser()
   const [files, setFiles] = useState<File[]>([])
-  const initialValues=eventDefaultValues;
+  const initialValues=event&&type==="Update"?event:eventDefaultValues;
   const router=useRouter();
-  const form = useForm<z.infer<typeof eventFormSchema>>({
+  const form = useForm<IEvent>({
     resolver: zodResolver(eventFormSchema),
     defaultValues:initialValues , })
  
     const {startUpload} = useUploadThing('imageUploader')
-  // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof eventFormSchema>) {
+  async function onSubmit(values: IEvent) {
     let uploadedImageUrl=values.imageUrl;
     if(files.length>0){
       const uploadedImages=await startUpload(files);
@@ -42,6 +42,18 @@ const EventForm = ({clerkId,type}:{clerkId:string,type:"Create"|"Update"}) => {
     if(type==='Create'){
       try{
         const newEvent=await axios.post('/api/event',{...values,imageUrl:uploadedImageUrl,id:user?.id})
+        if(newEvent.status=200){
+          form.reset();
+          router.push(`/events/${newEvent.data.eventId}`)
+        }
+      }catch(e){
+        console.log(e);
+      }
+    }
+    if(type==="Update"){
+      if(!event?.eventId)router.back();
+      try{
+        const newEvent=await axios.put('/api/event',{...values,imageUrl:uploadedImageUrl,id:user?.id,eventId:event?.eventId})
         if(newEvent.status=200){
           form.reset();
           router.push(`/events/${newEvent.data.eventId}`)
@@ -89,7 +101,7 @@ const EventForm = ({clerkId,type}:{clerkId:string,type:"Create"|"Update"}) => {
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormControl className="h-72">
-                    <Textarea placeholder="Description" {...field} className="textarea rounded-2xl" />
+                    <Textarea placeholder="Description" {...field} value={field.value??""} className="textarea rounded-2xl" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -103,7 +115,7 @@ const EventForm = ({clerkId,type}:{clerkId:string,type:"Create"|"Update"}) => {
                   <FormControl className="h-72">
                     <FileUploader 
                       onFieldChange={field.onChange}
-                      imageUrl={field.value}
+                      imageUrl={field.value!}
                       setFiles={setFiles}
                     />
                   </FormControl>
@@ -122,7 +134,7 @@ const EventForm = ({clerkId,type}:{clerkId:string,type:"Create"|"Update"}) => {
                 <FormControl>
                   <div className="flex-center h-[54px] overflow-hidden rounded-full bg-grey-50 px-4 py-2 w-full">
                     <Image alt="" src="/assets/icons/location-grey.svg" width={24} height={24}></Image>
-                    <Input placeholder="Event location or Online" {...field} className="input-field" />
+                    <Input placeholder="Event location or Online" {...field} value={field.value??""} className="input-field" />
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -177,7 +189,7 @@ const EventForm = ({clerkId,type}:{clerkId:string,type:"Create"|"Update"}) => {
                 <FormControl>
                   <div className="flex-center h-[54px] overflow-hidden rounded-full bg-grey-50 px-4 py-2 w-full">
                     <Image alt="" src="/assets/icons/dollar.svg" className="filter-grey" width={24} height={24}></Image>
-                    <Input type="number" placeholder="Price" min={0} {...field} className=" p-regular-16 border-0 bg-grey-50 outline-offset-0 focus:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"></Input>
+                    <Input type="number" placeholder="Price" min={0} {...field} value={field.value??""} className=" p-regular-16 border-0 bg-grey-50 outline-offset-0 focus:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"></Input>
           <FormField
             control={form.control}
             name="isFree"
@@ -207,7 +219,7 @@ const EventForm = ({clerkId,type}:{clerkId:string,type:"Create"|"Update"}) => {
                 <FormControl>
                   <div className="flex-center h-[54px] overflow-hidden rounded-full bg-grey-50 px-4 py-2 w-full">
                     <Image src="/assets/icons/link.svg" alt="url" width={24}height={24}></Image>
-                    <Input placeholder="URL" className="input-field" {...field}></Input>
+                    <Input placeholder="URL" className="input-field" {...field} value={field.value??""}></Input>
                   </div>
                 </FormControl>
                 <FormMessage />

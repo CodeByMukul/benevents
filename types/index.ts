@@ -152,7 +152,7 @@ export interface IEvent{
     "eventId":string; 
     "organizer":string; 
     "title":string;
-    "description":string|null;
+    "description":string|null|undefined;
     "location":string|null; 
     "createdAt": Date;
     "imageUrl": string;
