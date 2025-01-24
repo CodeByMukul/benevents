@@ -2,7 +2,8 @@ import prisma from "@/lib/prisma"
 import Image from "next/image";
 import { SearchParamProps } from "@/types";
 import { formatDateTime } from "@/lib/utils";
-const page = async({params:{id}}:{params:{id:string}}) => {
+const page = async({params}:{params:Promise<{id:string}>}) => {
+  const {id}=await params;
   const event= await prisma.event.findUnique({
     where:{
       eventId:id
