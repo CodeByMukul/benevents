@@ -2,9 +2,7 @@ import prisma from "@/lib/prisma"
 import Image from "next/image";
 import { SearchParamProps } from "@/types";
 import { formatDateTime } from "@/lib/utils";
-import { useRouter} from "next/navigation";
 const page = async({params:{id}}:{params:{id:string}}) => {
-  const Router=useRouter();
   const event= await prisma.event.findUnique({
     where:{
       eventId:id
@@ -14,9 +12,8 @@ const page = async({params:{id}}:{params:{id:string}}) => {
       category:true
     }
   });
-  if(!event)Router.push('/')
-  else
   return (
+    event&&
     <section className="flex justify-center bg-primary-50 bg-dotted-pattern bg-contain">
       <div className="grid grid-cols-1 md:grid-cols-2 2xl:max-w-7xl">
         <Image src={event.imageUrl} alt="img" width={1000} height={1000} className="h-full min-h-[300] object-cover object-center"></Image>
