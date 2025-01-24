@@ -8,8 +8,11 @@ import prisma from "@/lib/prisma"
 import { auth } from "@clerk/nextjs/server"
 const Header = async() => {
   const {sessionClaims}=await auth();
+  let create=false
+  if(sessionClaims){
   const user=await prisma.user.findUnique({where:{clerkId:sessionClaims?.sub}})
-  const create=user?user.canCreateEvents:false;
+  create=user?user.canCreateEvents:false;
+  }
   return (
     <header className="w-full border-b">
       <div className="wrapper flex items-center justify-between">
