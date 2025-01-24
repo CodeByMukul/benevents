@@ -142,7 +142,7 @@ const EventForm = ({clerkId,type}:{clerkId:string,type:"Create"|"Update"}) => {
                   <div className="flex-center h-[54px] overflow-hidden rounded-full bg-grey-50 px-4 py-2 w-full">
                     <Image alt="" src="/assets/icons/calendar.svg" className="filter-grey" width={24} height={24}></Image>
                     <p className="ml-3 whitespace-nowrap text-grey-600">Start Date:</p>
-                    <DatePicker selected={field.value} onChange={(date:Date) => field.onChange(date)} timeInputLabel="Time: " showTimeSelect dateFormat='MM/dd/yyyy h:mm aa' wrapperClassName="datePicker"/>
+                    <DatePicker selected={field.value} onChange={(date:Date|null) => field.onChange(date)} timeInputLabel="Time: " showTimeSelect dateFormat='MM/dd/yyyy h:mm aa' wrapperClassName="datePicker"/>
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -159,7 +159,7 @@ const EventForm = ({clerkId,type}:{clerkId:string,type:"Create"|"Update"}) => {
                   <div className="flex-center h-[54px] overflow-hidden rounded-full bg-grey-50 px-4 py-2 w-full">
                     <Image alt="" src="/assets/icons/calendar.svg" className="filter-grey" width={24} height={24}></Image>
                     <p className="ml-3 whitespace-nowrap text-grey-600">End Date:</p>
-                    <DatePicker selected={field.value} onChange={(date:Date) => field.onChange(date)} timeInputLabel="Time: " showTimeSelect dateFormat='MM/dd/yyyy h:mm aa' wrapperClassName="datePicker"/>
+                    <DatePicker selected={field.value} onChange={(date:Date|null) => field.onChange(date)} timeInputLabel="Time: " showTimeSelect dateFormat='MM/dd/yyyy h:mm aa' wrapperClassName="datePicker"/>
                   </div>
                 </FormControl>
                 <FormMessage />
