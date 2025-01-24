@@ -152,15 +152,15 @@ export interface IEvent{
     "eventId":string; 
     "organizer":string; 
     "title":string;
-    "description":string;
-    "location":string; 
+    "description":string|null;
+    "location":string|null; 
     "createdAt": Date;
     "imageUrl": string;
     "startDateTime": Date;
     "endDateTime": Date;
-    "price": string;
+    "price": string|null;
     "isFree": boolean;
-    "url": string
+    "url": string|null;
     "categoryId": string;
     "host": {
         "userId": string;
