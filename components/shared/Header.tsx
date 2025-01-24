@@ -4,7 +4,12 @@ import NavItems from "./NavItems"
 import {SignedIn,UserButton ,SignedOut } from "@clerk/nextjs"
 import { Button } from "../ui/button"
 import Image from "next/image"
-const Header = () => {
+import prisma from "@/lib/prisma"
+import { auth } from "@clerk/nextjs/server"
+const Header = async() => {
+  const {sessionClaims}=await auth();
+  const user=await prisma.user.findUnique({where:{clerkId:sessionClaims?.sub}})
+  const create=user?user.canCreateEvents:false;
   return (
     <header className="w-full border-b">
       <div className="wrapper flex items-center justify-between">
@@ -13,7 +18,7 @@ const Header = () => {
         </Link>
         <SignedIn>
           <nav className="md:flex-between hidden w-full max-w-xs">
-            <NavItems>
+            <NavItems create={create}>
             </NavItems>
           </nav>
         </SignedIn>

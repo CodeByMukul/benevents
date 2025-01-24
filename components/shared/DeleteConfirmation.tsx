@@ -2,6 +2,7 @@
 
 import { useTransition } from 'react'
 import { usePathname } from 'next/navigation'
+import { useAuth } from '@clerk/nextjs'
 import Image from 'next/image'
 
 import {
@@ -18,11 +19,12 @@ import {
 import axios from 'axios'
 
 const DeleteConfirmation = ({ eventId }: { eventId: string }) => {
+  const {userId}=useAuth();
   const pathname = usePathname()
   let [isPending, startTransition] = useTransition()
   const deleteEvent=async()=>{
     try{
-    const res=await axios.post('/api/event/delete',{eventId})
+    const res=await axios.post('/api/event/delete',{eventId,userId})
     console.log(res)
     window.location.reload();}
     catch(e){

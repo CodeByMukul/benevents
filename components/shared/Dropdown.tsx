@@ -5,8 +5,10 @@ import { startTransition, useEffect, useState } from "react"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import axios from 'axios'
+import { useAuth } from '@clerk/nextjs'
 
 const Dropdown = ({value,onChangeHandler}:{value?:string, onChangeHandler?:()=>void}) => {
+  const {userId}=useAuth();
   interface ICategory{
    id:string;
     name: string;
@@ -16,7 +18,7 @@ const Dropdown = ({value,onChangeHandler}:{value?:string, onChangeHandler?:()=>v
   }])
   const [newCategory, setNewCategory] = useState("")
   const handleAddCategory=()=>{
-   const newCat= axios.post(`/api/category`,{name:newCategory.trim()}).then((res)=>{console.log(res);
+   const newCat= axios.post(`/api/category`,{name:newCategory.trim(),userId}).then((res)=>{console.log(res);
       setCategories((e)=>[...e,{name:newCategory,id:res.data.cat.id}])
     }).catch((e)=>{console.log(e);console.log("Error category creation")})   
 

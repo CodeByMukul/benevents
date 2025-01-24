@@ -9,6 +9,12 @@ export const POST = async (req: NextRequest) => {
 
   const { id,categoryId, ...eventData } = values; // Destructure to get user ID and event data
   try {
+    const user=await prisma.user.findUnique({
+      where:{
+        clerkId:id
+      }
+    })
+    if(!user?.canCreateEvents)return NextResponse.json({msg:"Permission nahi hai puch ke kra kr"},{status:403});
     const newEvent = await prisma.event.create({
       data: {
         ...eventData,

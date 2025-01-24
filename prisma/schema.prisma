@@ -23,6 +23,8 @@ model User {
   photo    String
   events   Event[]  @relation("UserEvents")
   orders   Order[]  @relation("UserOrders")
+  canCreateEvents Boolean @default(false)
+  isAdmin Boolean @default(false)
 }
 
 model Event {
