@@ -40,7 +40,6 @@ const Card = async({event,hasOrderLink,hidePrice}:CardProps) => {
           <p className="p-semibold-14 rounded-full bg-gray-500/10 px-4 py-1 text-grey-500">
             {event.category.name}
           </p>
-
         </div>
 }
 
