@@ -147,3 +147,33 @@ export type SearchParamProps = {
   params: { id: string }
   searchParams: { [key: string]: string | string[] | undefined }
 }
+
+export interface IEvent{
+    "eventId":string; 
+    "organizer":string; 
+    "title":string;
+    "description":string;
+    "location":string; 
+    "createdAt": Date;
+    "imageUrl": string;
+    "startDateTime": Date;
+    "endDateTime": Date;
+    "price": string;
+    "isFree": boolean;
+    "url": string
+    "categoryId": string;
+    "host": {
+        "userId": string;
+        "clerkId": string;
+        "email": string;
+        "username": string; 
+        "firstName": string;
+        "lastName": string;
+        "photo": string;
+
+    },
+    "category": {
+        "id": string;
+        "name": string;
+}
+}

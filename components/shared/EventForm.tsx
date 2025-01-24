@@ -44,7 +44,7 @@ const EventForm = ({clerkId,type}:{clerkId:string,type:"Create"|"Update"}) => {
         const newEvent=await axios.post('/api/event',{...values,imageUrl:uploadedImageUrl,id:user?.id})
         if(newEvent.status=200){
           form.reset();
-          router.push(`events/${newEvent.data.eventId}`)
+          router.push(`/events/${newEvent.data.eventId}`)
         }
       }catch(e){
         console.log(e);
