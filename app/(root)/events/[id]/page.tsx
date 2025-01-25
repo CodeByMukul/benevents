@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma"
+import Collection from "@/components/shared/Collection";
 import Image from "next/image";
 import { SearchParamProps } from "@/types";
 import { formatDateTime } from "@/lib/utils";
@@ -13,8 +14,22 @@ const page = async({params}:{params:Promise<{id:string}>}) => {
       category:true
     }
   });
+  const eventss=await prisma.event.findMany({
+    where:{
+      NOT:{
+        eventId:event?.eventId
+      }
+    },
+    include:{
+      host:true,
+      category:true
+    }
+  })
+  const events=eventss.filter((eventt)=>eventt.host.username==event?.host.username)
+  const simEvents=eventss.filter((eventt)=>eventt.categoryId==event?.categoryId)
   return (
     event&&
+    <>
     <section className="flex justify-center bg-primary-50 bg-dotted-pattern bg-contain">
       <div className="grid grid-cols-1 md:grid-cols-2 2xl:max-w-7xl">
         <Image src={event.imageUrl} alt="img" width={1000} height={1000} className="h-full min-h-[300] object-cover object-center"></Image>
@@ -63,6 +78,21 @@ const page = async({params}:{params:Promise<{id:string}>}) => {
       </div>
 
     </section>
+    <section className="wrapper my-8 flex flex-col gap-8 md:gap-12">
+      <h2 className="h2-bold">Related Events</h2>
+      
+      {events&&
+        <Collection data={events} emptyTitle="No Events Found" emptyStateSubtext="Come back later" collectionType="All_Events" limit={3} page={1} totalPages={2}></Collection>
+      }
+    </section>
+    <section className="wrapper my-8 flex flex-col gap-8 md:gap-12">
+      <h2 className="h2-bold">Events With Tag "{event.category.name}"</h2>
+      
+      {simEvents&&
+        <Collection data={simEvents} emptyTitle="No Events Found" emptyStateSubtext="Come back later" collectionType="All_Events" limit={3} page={1} totalPages={2}></Collection>
+      }
+    </section>
+    </>
   )
 }
 

@@ -56,8 +56,12 @@ const Card = async({event,hasOrderLink,hidePrice}:CardProps) => {
         <p className="p-medium-14 md:p-medium-16 text-gray-600">
           {event.host.firstName} {event.host.lastName}
         </p>
+
+      </div>
+
+      </Link>
         {hasOrderLink && (
-          <Link href={`/orders?eventId=${event.eventId}`} className="flex gap-2">
+          <Link href={`/orders?eventId=${event.eventId}`} className="flex gap-2 ml-4 mb-2">
             <p className=" text-primary-500">
               Order Details
             </p>
@@ -66,10 +70,6 @@ const Card = async({event,hasOrderLink,hidePrice}:CardProps) => {
             </Image>
           </Link>
         )}
-
-      </div>
-
-      </Link>
     </div>
   )
 }
