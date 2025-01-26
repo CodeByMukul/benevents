@@ -46,7 +46,7 @@ const page = async({params}:{params:Promise<{id:string}>}) => {
               </p>
             </div>
           </div>
-          {/* checkout button*/}
+          {/* checkout button / edit button*/}
           <div className="flex flex-col gap-5">
             <div className="flex gap-2 md:gap-3">
               <Image src="/assets/icons/calendar.svg" className="" alt="calendar" width={32} height={32}></Image>
