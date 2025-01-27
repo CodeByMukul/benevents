@@ -2,7 +2,7 @@ import { Separator } from '../ui/separator'
 import prisma from '@/lib/prisma'
 import { auth } from '@clerk/nextjs/server'
 import NavItems from './NavItems'
-import { Sheet,SheetContent,SheetTitle,SheetTrigger } from '../ui/sheet'
+import { SheetClose,Sheet,SheetContent,SheetTitle,SheetTrigger } from '../ui/sheet'
 import Image from 'next/image'
 const MobileNav = async() => {
   const {sessionClaims}=await auth();
@@ -25,7 +25,9 @@ const MobileNav = async() => {
           <Image src="/assets/images/logo.svg" alt='logo' width={128} height={38}></Image>
           </SheetTitle>
           <Separator className='border border-gray-50'></Separator>
+          <SheetClose asChild>
           <NavItems create={post}></NavItems>
+</SheetClose>
   </SheetContent>
 </Sheet>
     </nav>
