@@ -97,13 +97,13 @@ export async function POST(req: Request) {
     if (eventType === 'user.deleted') {
       const { id } = evt.data
 
-      const deletedUser = await prisma.user.delete({
-        where: { clerkId: id }
-      })
       const posttt=await prisma.event.deleteMany({
         where:{
           organizer:id
         }
+      })
+      const deletedUser = await prisma.user.delete({
+        where: { clerkId: id }
       })
       console.log(posttt)
       console.log(deletedUser)
