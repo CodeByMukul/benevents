@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma"
+import Link from "next/link";
 import Collection from "@/components/shared/Collection";
 import Image from "next/image";
 import { SearchParamProps } from "@/types";
@@ -70,7 +71,7 @@ const page = async({params}:{params:Promise<{id:string}>}) => {
           <div className="flex flex-col gap-2">
           <p className="p-bold-20 text-gray-600">What You'll Learn</p>
           <p className="p-medium-16 lg:p-regular-18">{event?.description}</p>
-          <p className="p-medium-16 lg:p-regular-18 truncate text-primary-500 underline">{event?.url}</p>
+          <Link href={event.url!} target="_blank" className="p-medium-16 lg:p-regular-18 truncate text-primary-500 underline">{event?.url}</Link>
 
           </div>
         </div>
