@@ -188,7 +188,7 @@ const EventForm = ({clerkId,type,event}:{clerkId:string,type:"Create"|"Update",e
               <FormItem className="w-full">
                 <FormControl>
                   <div className="flex-center h-[54px] overflow-hidden rounded-full bg-grey-50 px-4 py-2 w-full">
-                    <Image alt="" src="/assets/icons/dollar.svg" className="filter-grey" width={24} height={24}></Image>
+                    <Image alt="" src="/assets/icons/rupee.svg" className="filter-grey" width={24} height={24}></Image>
                     <Input type="number" placeholder="Price" min={0} {...field} value={field.value??""} className=" p-regular-16 border-0 bg-grey-50 outline-offset-0 focus:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"></Input>
           <FormField
             control={form.control}
