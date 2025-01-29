@@ -4,7 +4,6 @@ import { PrismaClient } from '@prisma/client';
 export const POST = async (req: NextRequest) => {
   const prisma=new PrismaClient();
   const values = await req.json();
-  console.log("Received values:", values);
   if(values.isFree==true)values.price="0";
 
   const { id,categoryId, ...eventData } = values; // Destructure to get user ID and event data

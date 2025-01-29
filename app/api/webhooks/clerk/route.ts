@@ -71,7 +71,6 @@ export async function POST(req: Request) {
         data: user
       })
 
-      console.log(newUser)
       return new Response("User created successfully", { status: 201 })
     }
 

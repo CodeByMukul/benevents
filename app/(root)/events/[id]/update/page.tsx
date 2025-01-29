@@ -28,7 +28,6 @@ const page = async({params}:{params:Promise<{id:string}>}) => {
     })
     
     if(!event)redirect('/');
-      console.log(event)
   return (
   <>
   <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">

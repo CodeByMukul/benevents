@@ -38,7 +38,6 @@ const EventForm = ({clerkId,type,event}:{clerkId:string,type:"Create"|"Update",e
       if(!uploadedImages)return;
       uploadedImageUrl=uploadedImages[0].url;
     }
-    console.log(values)
     if(type==='Create'){
       try{
         const newEvent=await axios.post('/api/event',{...values,imageUrl:uploadedImageUrl,id:user?.id})

@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma"
+import CheckoutButton from "@/components/shared/Checkoutbutton";
 import Link from "next/link";
 import Collection from "@/components/shared/Collection";
 import Image from "next/image";
@@ -48,6 +49,7 @@ const page = async({params}:{params:Promise<{id:string}>}) => {
             </div>
           </div>
           {/* checkout button / edit button*/}
+          <CheckoutButton event={event}></CheckoutButton>
           <div className="flex flex-col gap-5">
             <div className="flex gap-2 md:gap-3">
               <Image src="/assets/icons/calendar.svg" className="" alt="calendar" width={32} height={32}></Image>

@@ -18,7 +18,7 @@ const Dropdown = ({value,onChangeHandler}:{value?:string, onChangeHandler?:()=>v
   }])
   const [newCategory, setNewCategory] = useState("")
   const handleAddCategory=()=>{
-   const newCat= axios.post(`/api/category`,{name:newCategory.trim(),userId}).then((res)=>{console.log(res);
+   const newCat= axios.post(`/api/category`,{name:newCategory.trim(),userId}).then((res)=>{
       setCategories((e)=>[...e,{name:newCategory,id:res.data.cat.id}])
     }).catch((e)=>{console.log(e);console.log("Error category creation")})   
 

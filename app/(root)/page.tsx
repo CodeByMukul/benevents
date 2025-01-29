@@ -1,17 +1,21 @@
 import Image from "next/image";
+import Search from "@/components/shared/Search";
 import { Button } from "@/components/ui/button";
 import Collection from "@/components/shared/Collection";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 //
-export default async function Home() {
-  const events=await prisma.event.findMany({
+export default async function Home({searchParams}:{searchParams:Promise<any>}) {
+  const {query}=await searchParams;
+  
+  const eventss=await prisma.event.findMany({
     include:{
       host:true,
       category:true
     }
   });
-  console.log(events)
+  console.log(eventss);
+  const events=eventss.filter((e)=>e.title.toLowerCase().search(query)!=-1||e.host.firstName.toLowerCase().search(query)!=-1)
   return (
   <>
     <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-10">
@@ -34,7 +38,7 @@ export default async function Home() {
       <section id="events" className="wrapper my-8 flex-col flex gap-8 md:gap-12">
         <h2 className="h2-bold ">Current Events</h2>
         <div className="flex w-full flex-col gap-5 md:flex-row ">
-          Search
+          <Search placeholder="Search title..."/>
           Category
           Filter
         </div>
