@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma"
-import CheckoutButton from "@/components/shared/Checkoutbutton";
+import CheckoutButton from "@/components/shared/CheckoutButton";
 import Link from "next/link";
 import Collection from "@/components/shared/Collection";
 import Image from "next/image";
