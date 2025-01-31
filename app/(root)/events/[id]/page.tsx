@@ -1,3 +1,4 @@
+
 import prisma from "@/lib/prisma";
 import CheckoutButton from "@/components/shared/CheckoutButton";
 import Link from "next/link";
@@ -5,8 +6,14 @@ import Collection from "@/components/shared/Collection";
 import Image from "next/image";
 import { formatDateTime } from "@/lib/utils";
 
-const page = async ({ params }: { params: Promise<{ id: string }>}) => {
+const page = async ({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ relatedPage?: string; categoryPage?: string }> }) => {
   const { id } = await params;
+  const { relatedPage = "1", categoryPage = "1" } = await searchParams;
+  const pageSize = 3;
+
+  // Convert pages to numbers
+  const relatedPageNum = Number(relatedPage);
+  const categoryPageNum = Number(categoryPage);
 
   // Fetch the main event
   const event = await prisma.event.findUnique({
@@ -18,28 +25,50 @@ const page = async ({ params }: { params: Promise<{ id: string }>}) => {
     return <p className="text-center p-bold-20">Event not found</p>;
   }
 
+  // Fetch total counts for pagination
+  const totalRelatedEvents = await prisma.event.count({
+    where: {
+      startDateTime: { gte: new Date() },
+      host: { username: event.host.username },
+      NOT: { eventId: event.eventId },
+    },
+  });
+
+  const totalCategoryEvents = await prisma.event.count({
+    where: {
+      startDateTime: { gte: new Date() },
+      categoryId: event.categoryId,
+      NOT: { eventId: event.eventId },
+    },
+  });
+
+  const totalRelatedPages = Math.ceil(totalRelatedEvents / pageSize);
+  const totalCategoryPages = Math.ceil(totalCategoryEvents / pageSize);
+
   // Fetch events by the same host
   const relatedEvents = await prisma.event.findMany({
     where: {
-      startDateTime: { gte: new Date()}, // Only fetch events starting from now onwards },
+      startDateTime: { gte: new Date() },
       host: { username: event.host.username },
-      NOT: { eventId: event.eventId }, // Exclude current event
+      NOT: { eventId: event.eventId },
     },
     include: { host: true, category: true },
-    take:6,
     orderBy: { startDateTime: "asc" },
+    take: pageSize,
+    skip: (relatedPageNum - 1) * pageSize,
   });
 
   // Fetch events in the same category
   const categoryEvents = await prisma.event.findMany({
     where: {
-      startDateTime: { gte: new Date()}, // Only fetch events starting from now onwards },
+      startDateTime: { gte: new Date() },
       categoryId: event.categoryId,
-      NOT: { eventId: event.eventId }, // Exclude current event
+      NOT: { eventId: event.eventId },
     },
     include: { host: true, category: true },
-    take:6,
     orderBy: { startDateTime: "asc" },
+    take: pageSize,
+    skip: (categoryPageNum - 1) * pageSize,
   });
 
   return (
@@ -127,9 +156,10 @@ const page = async ({ params }: { params: Promise<{ id: string }>}) => {
           emptyTitle="No Events Found"
           emptyStateSubtext="Come back later"
           collectionType="All_Events"
-          limit={3}
-          page={1}
-          totalPages={2}
+          limit={pageSize}
+          page={relatedPageNum}
+          totalPages={totalRelatedPages}
+          urlParamName="relatedPage"
         />
       </section>
 
@@ -141,9 +171,10 @@ const page = async ({ params }: { params: Promise<{ id: string }>}) => {
           emptyTitle="No Events Found"
           emptyStateSubtext="Come back later"
           collectionType="All_Events"
-          limit={3}
-          page={1}
-          totalPages={2}
+          limit={pageSize}
+          page={categoryPageNum}
+          totalPages={totalCategoryPages}
+          urlParamName="categoryPage"
         />
       </section>
     </>
