@@ -1,5 +1,6 @@
 import Card from "./Card";
 import { IEvent } from "@/types";
+import Pagination from "./Pagination";
 type CollectionProps={
   data:IEvent[],
   emptyTitle:string,
@@ -35,6 +36,11 @@ const Collection = ({
           )
         })} 
       </ul>
+      {
+        totalPages>1&&(
+          <Pagination urlParamName={urlParamName} page={page} totalPages={totalPages}/>
+        )
+      }
       </div>:
     <div className="flex-center wrapper min-h-[200px] w-full flex-col rounded-[14px] bg-grey-50 py-28 text-center">
       <h3 className="p-bold-20 md:h5-bold">{emptyTitle}</h3>
