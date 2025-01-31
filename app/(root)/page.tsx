@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Collection from "@/components/shared/Collection";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
-export default async function Home({ searchParams }: { searchParams: Promise<any> }) {
+export default async function Home({ searchParams }: { searchParams: Promise<{query?:string,category?:string,page?:string|number}> }) {
   let { query, category, page} = await searchParams;
   page = Number(page) || 1;
   query = query?.toLowerCase() || "";

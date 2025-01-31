@@ -5,8 +5,8 @@ import Collection from "@/components/shared/Collection";
 import Image from "next/image";
 import { formatDateTime } from "@/lib/utils";
 
-const page = async ({ params }: { params: { id: string } }) => {
-  const { id } = params;
+const page = async ({ params }: { params: Promise<{ id: string }>}) => {
+  const { id } = await params;
 
   // Fetch the main event
   const event = await prisma.event.findUnique({
