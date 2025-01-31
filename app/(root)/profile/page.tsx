@@ -5,10 +5,11 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 
-const page = async ({ searchParams }: { searchParams: { eventsPage?: string } }) => {
+const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: string }> }) => {
   const { sessionClaims } = await auth();
   const userId = sessionClaims?.username;
-  const eventsPage = Number(searchParams.eventsPage) || 1;
+  const sp=await searchParams;
+  const eventsPage = Number(sp.eventsPage) || 1;
 
   if (!userId) return <p className="text-center text-red-500">Unauthorized</p>;
 
