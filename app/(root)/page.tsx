@@ -1,22 +1,36 @@
 import Image from "next/image";
+import CategoryFilter from "@/components/shared/CategoryFilter";
 import Search from "@/components/shared/Search";
 import { Button } from "@/components/ui/button";
 import Collection from "@/components/shared/Collection";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 //
-export default async function Home({searchParams}:{searchParams:Promise<any>}) {
-  const {query}=await searchParams;
+export default async function Home({ searchParams }: { searchParams: Promise<any> }) {
+  let { query, category } = await searchParams;
   
-  const eventss=await prisma.event.findMany({
-    include:{
-      host:true,
-      category:true
+  // Ensure query and category are properly formatted for case-insensitive search
+  query = query?.toLowerCase() || "";
+  category = category?.toLowerCase() || "";
+
+  // Fetch only the required events using Prisma filtering
+  const events = await prisma.event.findMany({
+    where: {
+      AND: [
+        {
+          OR: [
+            { title: { contains: query, mode: "insensitive" } }, // Case-insensitive search
+            { host: { firstName: { contains: query, mode: "insensitive" } } }
+          ]
+        },
+        category ? { category: { name: { equals: category, mode: "insensitive" } } } : {} // Apply category filter if provided
+      ]
+    },
+    include: {
+      host: true,
+      category: true
     }
-  });
-  console.log(eventss);
-  const events=eventss.filter((e)=>e.title.toLowerCase().search(query)!=-1||e.host.firstName.toLowerCase().search(query)!=-1)
-  return (
+  });  return (
   <>
     <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-10">
         <div className="wrapper grid grid-cols-1 gap-5 md:grid-cols-2 2xl:gap-0"> {//wrapper makes it so that the content aligns width the max width of navbar
@@ -39,8 +53,7 @@ export default async function Home({searchParams}:{searchParams:Promise<any>}) {
         <h2 className="h2-bold ">Current Events</h2>
         <div className="flex w-full flex-col gap-5 md:flex-row ">
           <Search placeholder="Search title..."/>
-          Category
-          Filter
+          <CategoryFilter/>
         </div>
         <Collection data={events} emptyTitle="No Events Found" emptyStateSubtext="Come back later" collectionType="All_Events" limit={6} page={1} totalPages={2}></Collection>
         

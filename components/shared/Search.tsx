@@ -29,7 +29,7 @@ const Search = ({placeholder='Search title...'}:{placeholder:string}) => {
 
    } 
     router.push(newurl,{scroll:false})
-    },300);
+    },150);
     return ()=>clearTimeout(deb);
   },[query,searchParams,router])
   return (
