@@ -4,14 +4,18 @@ import Collection from "@/components/shared/Collection";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
+import Search from "@/components/shared/Search";
 
-const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: string }> }) => {
+const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: string , query?:string}> }) => {
+
   const { sessionClaims } = await auth();
   const userId = sessionClaims?.username;
-  const sp=await searchParams;
-  const eventsPage = Number(sp.eventsPage) || 1;
 
   if (!userId) return <p className="text-center text-red-500">Unauthorized</p>;
+
+  const { eventsPage: eventsPageParam = "1", query = "" } = await searchParams;
+  const eventsPage = Math.max(1, Number(eventsPageParam) || 1);
+  const pageSize = 3;
 
   // Fetch the logged-in user
   const user = await prisma.user.findUnique({
@@ -21,20 +25,39 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
 
   // Fetch total event count for pagination
   const totalEvents = await prisma.event.count({
-    where: { host: { username: userId } },
+    where: {
+      host: { username: userId },
+      AND: [
+        {
+          OR: [
+            { title: { contains: query, mode: "insensitive" } },
+            { host: { firstName: { contains: query, mode: "insensitive" } } },
+          ],
+        },
+      ],
+    },
   });
 
-  const totalPages = Math.ceil(totalEvents / 3);
+  const totalPages = Math.ceil(totalEvents / pageSize);
 
   // Fetch events organized by the user
   const events = await prisma.event.findMany({
-    where: { host: { username: userId } },
+    where: {
+      host: { username: userId },
+      AND: [
+        {
+          OR: [
+            { title: { contains: query, mode: "insensitive" } },
+            { host: { firstName: { contains: query, mode: "insensitive" } } },
+          ],
+        },
+      ],
+    },
     include: { host: true, category: true },
     orderBy: { createdAt: "desc" },
-    take: 3,
-    skip: (eventsPage - 1) * 3,
+    take: pageSize,
+    skip: (eventsPage - 1) * pageSize,
   });
-
   return (
     <>
       {/* My Tickets Section */}
@@ -55,6 +78,9 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
             <Button asChild className="button hidden sm:flex">
               <Link href="/events/create">Create New Event</Link>
             </Button>
+          </div>
+        <div className="wrapper flex w-1/2 flex-col gap-5 md:flex-row">
+          <Search placeholder="Search title..." />
           </div>
           <section className="wrapper my-8">
             <Collection
