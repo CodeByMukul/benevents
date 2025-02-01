@@ -17,7 +17,7 @@ export async function POST(req:NextRequest){
    const event=JSON.parse(body);
    if(event.event==="payment.captured"){
      const payment=event.payload.payment.entity;
-     const order=prisma.order.update({
+     const order=await prisma.order.update({
        where:{
          stripeId:payment.order_id
        },
@@ -30,7 +30,7 @@ export async function POST(req:NextRequest){
    }
    if(event.event==="payment.failed"){
      const payment=event.payload.payment.entity;
-     const order=prisma.order.delete({
+     const order=await prisma.order.delete({
        where:{
          stripeId:payment.order_id
        },
