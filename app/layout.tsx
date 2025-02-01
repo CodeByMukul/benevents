@@ -36,6 +36,7 @@ export default function RootLayout({
   return (
       <ClerkProvider afterSignOutUrl="/">
     <html lang="en">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       <body
         className={`${poppins.variable} `}
       >

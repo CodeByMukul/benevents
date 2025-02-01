@@ -61,5 +61,6 @@ model Order {
   event      Event    @relation("EventOrders", fields: [eventId], references: [eventId])
   buyerId    String
   buyer      User     @relation("UserOrders", fields: [buyerId], references: [clerkId])
+  status      String @default("pending")
 }
 
