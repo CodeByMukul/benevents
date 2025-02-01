@@ -25,10 +25,10 @@ const EventForm = ({clerkId,type,event}:{clerkId:string,type:"Create"|"Update",e
   const { isSignedIn, user, isLoaded } = useUser()
   const [files, setFiles] = useState<File[]>([])
   const initialValues=event&&type==="Update"?event:eventDefaultValues;
-  const router=useRouter();
   const form = useForm<IEvent>({
     resolver: zodResolver(eventFormSchema),
     defaultValues:initialValues , })
+  const router=useRouter();
  
     const {startUpload} = useUploadThing('imageUploader')
   async function onSubmit(values: IEvent) {

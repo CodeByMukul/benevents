@@ -6,24 +6,24 @@ import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import Search from "@/components/shared/Search";
 
-const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: string , query?:string}> }) => {
-
+const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: string, myEventsPage?: string, query?: string }> }) => {
   const { sessionClaims } = await auth();
   const userId = sessionClaims?.username;
 
   if (!userId) return <p className="text-center text-red-500">Unauthorized</p>;
 
-  const { eventsPage: eventsPageParam = "1", query = "" } = await searchParams;
+  const { eventsPage: eventsPageParam = "1", myEventsPage: myEventsPageParam = "1", query = "" } = await searchParams;
   const eventsPage = Math.max(1, Number(eventsPageParam) || 1);
+  const myEventsPage = Math.max(1, Number(myEventsPageParam) || 1);
   const pageSize = 3;
 
   // Fetch the logged-in user
   const user = await prisma.user.findUnique({
     where: { username: userId },
-    select: { canCreateEvents: true },
+    select: { canCreateEvents: true, clerkId: true },
   });
 
-  // Fetch total event count for pagination
+  // Fetch total event count for pagination (Organized Events)
   const totalEvents = await prisma.event.count({
     where: {
       host: { username: userId },
@@ -58,6 +58,38 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
     take: pageSize,
     skip: (eventsPage - 1) * pageSize,
   });
+
+  // Fetch total count of purchased events (My Tickets)
+  const totalMyEvents = await prisma.order.count({
+    where: {
+      buyerId: user?.clerkId,
+      status: "completed",
+    },
+  });
+
+  const totalMyEventsPages = Math.ceil(totalMyEvents / pageSize);
+
+  // Fetch My Tickets (purchased events)
+  const myOrders = await prisma.order.findMany({
+    where: {
+      buyerId: user?.clerkId,
+      status: "completed",
+    },
+    include: {
+      event: {
+        include: {
+          host: true,
+          category: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: pageSize,
+    skip: (myEventsPage - 1) * pageSize,
+  });
+
+  const myEvents = myOrders.map((order) => order.event) || [];
+
   return (
     <>
       {/* My Tickets Section */}
@@ -68,6 +100,18 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
             <Link href="/#events">Explore More Events</Link>
           </Button>
         </div>
+        <section className="wrapper my-8">
+          <Collection
+            data={myEvents}
+            emptyTitle="No events purchased yet"
+            emptyStateSubtext="Explore and buy tickets to amazing events!"
+            collectionType="My_Tickets"
+            limit={pageSize}
+            page={myEventsPage}
+            urlParamName="myEventsPage"
+            totalPages={totalMyEventsPages}
+          />
+        </section>
       </section>
 
       {/* Events Organized Section */}
@@ -79,8 +123,8 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
               <Link href="/events/create">Create New Event</Link>
             </Button>
           </div>
-        <div className="wrapper flex w-1/2 flex-col gap-5 md:flex-row">
-          <Search placeholder="Search title..." />
+          <div className="wrapper flex w-1/2 flex-col gap-5 md:flex-row">
+            <Search placeholder="Search title..." />
           </div>
           <section className="wrapper my-8">
             <Collection
@@ -88,7 +132,7 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
               emptyTitle="No events hosted yet"
               emptyStateSubtext="Host Some Exciting Events!"
               collectionType="Events_Organized"
-              limit={3}
+              limit={pageSize}
               page={eventsPage}
               urlParamName="eventsPage"
               totalPages={totalPages}

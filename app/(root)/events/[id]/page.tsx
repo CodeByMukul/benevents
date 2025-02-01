@@ -18,7 +18,7 @@ const page = async ({ params, searchParams }: { params: Promise<{ id: string }>;
   // Fetch the main event
   const event = await prisma.event.findUnique({
     where: { eventId: id },
-    include: { host: true, category: true },
+    include: { host: true, category: true,orders:{where:{status:"completed"}}},
   });
 
   if (!event) {

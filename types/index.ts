@@ -175,5 +175,5 @@ export interface IEvent{
     "category": {
         "id": string;
         "name": string;
-}
+}, "orders"?:any
 }
