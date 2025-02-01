@@ -15,7 +15,7 @@ export async function POST(req:NextRequest){
    })
   
    const event=JSON.parse(body);
-   if(event.event==="payment captured"){
+   if(event.event==="payment.captured"){
      const payment=event.payload.payment.entity;
      const order=prisma.order.update({
        where:{
@@ -28,7 +28,7 @@ export async function POST(req:NextRequest){
      console.log(order);
      return NextResponse.json({msg:"Payment completed"},{status:200})
    }
-   if(event.event==="payment failed"){
+   if(event.event==="payment.failed"){
      const payment=event.payload.payment.entity;
      const order=prisma.order.delete({
        where:{

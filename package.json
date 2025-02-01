@@ -50,6 +50,7 @@
     "eslint": "^9.18.0",
     "eslint-config-next": "15.1.5",
     "i": "^0.3.7",
+    "mini-css-extract-plugin": "^2.9.2",
     "npm": "^11.1.0",
     "postcss": "^8.5.1",
     "prisma": "^6.3.0",

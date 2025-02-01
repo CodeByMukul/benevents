@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
@@ -36,10 +37,10 @@ export default function RootLayout({
   return (
       <ClerkProvider afterSignOutUrl="/">
     <html lang="en">
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       <body
         className={`${poppins.variable} `}
       >
+<Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload"/>
         {children}
       </body>
 

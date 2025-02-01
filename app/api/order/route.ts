@@ -23,7 +23,7 @@ export async function POST(req:Request){
     const order=await razorpay.orders.create({
       amount:event.isFree?0:Number(event.price)*100,
       currency:"INR",
-      receipt:`${sessionClaims.sub}-${eventId}`,
+      receipt:`test-${Date.now()}`,
       notes:{
         eventId,
         name:event.title,
