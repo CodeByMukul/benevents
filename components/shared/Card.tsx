@@ -13,7 +13,7 @@ const Card = async({event,hasOrderLink,hidePrice}:CardProps) => {
   const {sessionClaims}=await auth()
   const userId=sessionClaims?.sub;
   const username=sessionClaims?.username;
-  const isEventCreater=(userId===event.host.clerkId)||(username==="owner");
+  const isEventCreater=(userId===event.host?.clerkId)||(username==="owner");
   return (
     <div className="group relative flex min-h-[380px] w-full max-w-[400px] flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-lg md:min-h-[438px]">
       <Link href={`/events/${event.eventId}`}
@@ -54,7 +54,7 @@ const Card = async({event,hasOrderLink,hidePrice}:CardProps) => {
           Hosted By:
         </p>
         <p className="p-medium-14 md:p-medium-16 text-gray-600">
-          {event.host.firstName} {event.host.lastName}
+          {event.host?.firstName} {event.host?.lastName}
         </p>
 
       </div>
