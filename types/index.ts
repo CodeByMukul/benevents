@@ -148,6 +148,32 @@ export type SearchParamProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
+export interface IUser {
+  userId: string;
+  clerkId: string;
+  email: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  photo: string;
+  events: IEvent[];  
+  orders: IOrder[]; 
+  canCreateEvents: boolean;
+  isAdmin: boolean;
+}
+
+export interface IOrder {
+  id: number;
+  createdAt: Date;
+  rzpId: string;
+  totalAmount?: string;
+  eventId: string;
+  event: IEvent;  
+  buyerId: string;
+  buyer: IUser;  
+  status: string;
+}
+
 export interface IEvent{
     "eventId":string; 
     "organizer":string; 
@@ -162,18 +188,11 @@ export interface IEvent{
     "isFree": boolean;
     "url": string|null;
     "categoryId": string;
-    "host": {
-        "userId": string;
-        "clerkId": string;
-        "email": string;
-        "username": string; 
-        "firstName": string;
-        "lastName": string;
-        "photo": string;
-
-    },
+    "host":IUser 
+    ,
     "category": {
         "id": string;
         "name": string;
 }, "orders"?:any
 }
+

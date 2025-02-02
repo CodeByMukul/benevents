@@ -76,7 +76,7 @@ const page = async ({ params, searchParams }: { params: Promise<{ id: string }>;
       <section className="flex justify-center bg-primary-50 bg-dotted-pattern bg-contain">
         <div className="grid grid-cols-1 md:grid-cols-2 2xl:max-w-7xl">
           <Image
-            src={event.imageUrl}
+            src={event.imageUrl||"https://cdn.pixabay.com/photo/2016/10/23/17/06/calendar-1763587_1280.png"}
             alt="img"
             width={1000}
             height={1000}
