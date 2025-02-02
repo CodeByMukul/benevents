@@ -10,7 +10,6 @@ const Checkout = ({event,userId}:{event:IEvent,userId:string|null|undefined}) =>
   const router=useRouter();
   // @ts-ignore
   const bought= event.orders?.some(obj => obj.buyerId=== userId);
-  console.log(bought)
   const onCheckout=async()=>{
     const res=await axios.post('/api/order',{eventId:event.eventId})
     if(!event.isFree){

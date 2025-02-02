@@ -1,7 +1,7 @@
 "use client"
 import axios from "axios"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
-import { formUrlQuery, removeKeysFromQuery } from "@/lib/utils"
+import { formUrlQuery, handleError, removeKeysFromQuery } from "@/lib/utils"
 import { Input } from "../ui/input"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -17,8 +17,10 @@ const CategoryFilter= () => {
   const searchParams=useSearchParams();
   useEffect(()=>{
     const getCategories=async()=>{
+      try{
       const categories=await axios.get('/api/category');
       if(categories.status==200)setCategories(categories.data.categories)
+      }catch(e){handleError(e)}
     }
     getCategories();
   },[])

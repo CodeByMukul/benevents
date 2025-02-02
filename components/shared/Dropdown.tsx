@@ -6,6 +6,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 } from "@/components/ui/alert-dialog"
 import axios from 'axios'
 import { useAuth } from '@clerk/nextjs'
+import { handleError } from "@/lib/utils";
 
 const Dropdown = ({value,onChangeHandler}:{value?:string, onChangeHandler?:()=>void}) => {
   const {userId}=useAuth();
@@ -24,11 +25,15 @@ const Dropdown = ({value,onChangeHandler}:{value?:string, onChangeHandler?:()=>v
 
   }
   useEffect(()=>{
+    try{
     const getCategories=async()=>{
       const categories=await axios.get('/api/category');
       if(categories.status==200)setCategories(categories.data.categories)
     }
     getCategories();
+    }catch(e){
+      handleError(e)
+    }
 
   },[])
   return (

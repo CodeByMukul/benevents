@@ -19,7 +19,7 @@ export async function POST(req:NextRequest){
      const payment=event.payload.payment.entity;
      const order=await prisma.order.update({
        where:{
-         stripeId:payment.order_id
+         rzpId:payment.order_id
        },
        data:{
          status:"completed"
@@ -32,7 +32,7 @@ export async function POST(req:NextRequest){
      const payment=event.payload.payment.entity;
      const order=await prisma.order.delete({
        where:{
-         stripeId:payment.order_id
+         rzpId:payment.order_id
        },
      })
      console.log(order);

@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     if (event.isFree) {
       const freeOrder = await prisma.order.create({
         data: {
-          stripeId: crypto.randomUUID(), 
+          rzpId: crypto.randomUUID(), 
           totalAmount: "0",
           eventId,
           buyerId: sessionClaims.sub,
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
 
     const newOrder = await prisma.order.create({
       data: {
-        stripeId: order.id,
+        rzpId: order.id,
         totalAmount: order.amount.toString(),
         eventId,
         buyerId: sessionClaims.sub

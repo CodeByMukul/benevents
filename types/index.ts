@@ -113,7 +113,7 @@ export type CheckoutOrderParams = {
 }
 
 export type CreateOrderParams = {
-  stripeId: string
+  rzpId: string
   eventId: string
   buyerId: string
   totalAmount: string
