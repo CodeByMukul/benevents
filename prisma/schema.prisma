@@ -58,7 +58,7 @@ model Order {
   rzpId       String   @unique
   totalAmount String?
   eventId    String
-  event      Event    @relation("EventOrders", fields: [eventId], references: [eventId])
+  event      Event    @relation("EventOrders", fields: [eventId], references: [eventId],onDelete: Cascade)
   buyerId    String
   buyer      User     @relation("UserOrders", fields: [buyerId], references: [clerkId])
   status      String @default("pending")
