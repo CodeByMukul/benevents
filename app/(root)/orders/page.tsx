@@ -6,8 +6,9 @@ import { SearchParamProps } from '@/types'
 import { IEvent,IOrder } from '@/types'
 
 const Orders = async ({ searchParams }: SearchParamProps) => {
-  const {eventId,query} = await searchParams
-
+  const si = await searchParams
+  const eventId = (si?.eventId as string) || "";
+  const query = (si?.query as string) || "";
   const orders : IOrder[]= await prisma.order.findMany({
     where: {
       eventId: eventId ? eventId : undefined,
@@ -41,7 +42,7 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
     },
     include: {
       buyer: true, // Fetch user details
-      event: true, // Fetch event details
+      event: {include:{category:true}}, // Fetch event details
     },
   });  return (
     <>
@@ -83,11 +84,11 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
                       <td className="min-w-[200px] flex-1  flex gap-2 py-4 pr-6">
 
                         <Avatar className='w-6 h-6'>
-                         <AvatarImage src={row.buyer.photo} />
+                         <AvatarImage src={row.buyer?.photo} />
                           <AvatarFallback>Pic</AvatarFallback>
                         </Avatar>
-                      {row.buyer.email}</td>
-                      <td className="min-w-[150px] py-4">{row.buyer.firstName} {row.buyer.lastName}</td>
+                      {row.buyer?.email}</td>
+                      <td className="min-w-[150px] py-4">{row.buyer?.firstName} {row.buyer?.lastName}</td>
                       <td className="min-w-[100px] py-4">
                         {formatDateTime(row.createdAt).dateTime}
                       </td>

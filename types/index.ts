@@ -156,8 +156,8 @@ export interface IUser {
   firstName: string;
   lastName: string;
   photo: string;
-  events: IEvent[];  
-  orders: IOrder[]; 
+  events?: IEvent[];  
+  orders?: IOrder[]; 
   canCreateEvents: boolean;
   isAdmin: boolean;
 }
@@ -166,11 +166,11 @@ export interface IOrder {
   id: number;
   createdAt: Date;
   rzpId: string;
-  totalAmount?: string;
+  totalAmount?: string|null;
   eventId: string;
-  event: IEvent;  
+  event?: IEvent;  
   buyerId: string;
-  buyer: IUser;  
+  buyer?: IUser;  
   status: string;
 }
 
@@ -188,11 +188,11 @@ export interface IEvent{
     "isFree": boolean;
     "url": string|null;
     "categoryId": string;
-    "host":IUser 
+    "host"?:IUser 
     ,
     "category": {
         "id": string;
         "name": string;
-}, "orders"?:any
+}, "orders"?:IOrder[]
 }
 
