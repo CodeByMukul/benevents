@@ -62,5 +62,6 @@ model Order {
   buyerId    String
   buyer      User     @relation("UserOrders", fields: [buyerId], references: [clerkId])
   status      String @default("pending")
+  used     Boolean @default(false)
 }
 

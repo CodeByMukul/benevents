@@ -1,4 +1,3 @@
-
 import prisma from "@/lib/prisma";
 import CheckoutButton from "@/components/shared/CheckoutButton";
 import Link from "next/link";

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { TanstackProvider } from "./providers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
@@ -40,8 +41,9 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} `}
       >
+      <TanstackProvider>
 <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload"/>
-        {children}
+        {children}</TanstackProvider>
       </body>
 
     </html>
