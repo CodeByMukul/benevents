@@ -4,11 +4,25 @@ import prisma from '@/lib/prisma'
 import { formatDateTime, formatPrice } from '@/lib/utils'
 import { SearchParamProps } from '@/types'
 import { IEvent,IOrder } from '@/types'
+import { auth } from '@clerk/nextjs/server'
+import { count } from 'console'
 
 const Orders = async ({ searchParams }: SearchParamProps) => {
   const si = await searchParams
-  const eventId = (si?.eventId as string) || "";
-  const query = (si?.query as string) || "";
+  const eventId = (si?.eventId as string) ;
+  const query = (si?.query as string) ;
+
+  const { sessionClaims } = await auth();
+  const userId = sessionClaims?.username;
+  const user= await prisma.user.findUnique({
+    where: { username: userId ,canCreateEvents:true, events:{
+      some:{
+        eventId:eventId
+      }
+    }},
+    select: { events: true},
+  });
+  if(!user)if(userId!="owner") return <p className="text-center text-red-500">Unauthorized</p>;
   const orders : IOrder[]= await prisma.order.findMany({
     where: {
       eventId: eventId ? eventId : undefined,
@@ -48,6 +62,7 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
     <>
       <section className=" bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <h3 className="wrapper h3-bold text-center sm:text-left ">Orders</h3>
+        <p className="p-regular-16 text-center sm:text-left wrapper text-primary-500">Total orders: {orders.length}</p>
       </section>
 
       <section className="wrapper mt-8">
@@ -62,7 +77,9 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
               <th className="min-w-[200px] flex-1 py-3 pr-4 text-left">User Email</th>
               <th className="min-w-[150px] py-3 text-left">Buyer</th>
               <th className="min-w-[100px] py-3 text-left">Booked</th>
+              <th className="min-w-[100px] py-3 text-right">Event</th>
               <th className="min-w-[100px] py-3 text-right">Amount</th>
+
             </tr>
           </thead>
           <tbody>
@@ -91,6 +108,9 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
                       <td className="min-w-[150px] py-4">{row.buyer?.firstName} {row.buyer?.lastName}</td>
                       <td className="min-w-[100px] py-4">
                         {formatDateTime(row.createdAt).dateTime}
+                      </td>
+                      <td className="min-w-[100px] py-4 text-right">
+                          {row.event?.title}
                       </td>
                       <td className="min-w-[100px] py-4 text-right">
                         {formatPrice(row.totalAmount||"")}
