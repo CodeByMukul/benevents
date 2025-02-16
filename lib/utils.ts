@@ -1,8 +1,26 @@
-import { type ClassValue, clsx } from 'clsx'
+import { type ClassValue, clsx } from 'clsx';
 
 import { twMerge } from 'tailwind-merge'
 import qs from 'query-string'
 import { UrlQueryParams, RemoveUrlQueryParams } from '@/types'
+
+import CryptoJS from "crypto-js";
+
+const secretKey =process.env.SECRET_KEY_ENCRYPTION||"ajao bhai event me "; 
+
+export function decryptJson(data: string): {eventId:string,orderId:string} {
+  try{
+  const decrypted = CryptoJS.AES.decrypt(data, secretKey).toString(CryptoJS.enc.Utf8);
+  const jsonData = JSON.parse(decrypted);
+    
+    return jsonData;}
+    catch(e){return {eventId:"Invalid",orderId:""}}
+}
+export  function encryptJson(data: object): string {
+  const jsonString = JSON.stringify(data); // Convert JSON to a string
+  const encrypted = CryptoJS.AES.encrypt(jsonString, secretKey).toString();
+  return encrypted;
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
