@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CheckoutButton from "@/components/shared/CheckoutButton";
 import Link from "next/link";
 import Collection from "@/components/shared/Collection";
@@ -96,8 +97,12 @@ const page = async ({ params, searchParams }: { params: Promise<{ id: string }>;
                     {event?.category?.name}
                   </p>
                 </div>
-                <p className="p-medium-18 ml-2 mt-2 sm:mt-0">
+                <p className="p-medium-18 ml-2 mt-2 sm:mt-0 flex items-center gap-1">
                   by{" "}
+          <Avatar className='w-10 h-10 ml-2'>
+            <AvatarImage src={event.host?.photo} />
+            <AvatarFallback>host</AvatarFallback>
+          </Avatar>
                   <span className="text-primary-500">
                     {event.host.firstName} {event.host.lastName}
                   </span>

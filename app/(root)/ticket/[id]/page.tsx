@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { encryptJson, formatDateTime } from "@/lib/utils"
 import { auth } from "@clerk/nextjs/server"
 import type { Metadata } from "next"
@@ -18,7 +19,11 @@ export default async function TicketPage({ params }: { params:Promise< { id: str
       buyerId:clerkId
     },
     include:{
-      event:true
+      event:{
+        include:{
+          host:true
+        }
+      }
     }
   })
 
@@ -67,7 +72,10 @@ export default async function TicketPage({ params }: { params:Promise< { id: str
         </div>
         <div className="bg-primary-50 p-4 flex justify-between items-center">
           <p className="text-sm text-gray-600">Ticket ID: {id}</p>
-          <Image src={ticket?.imageUrl||"https://cdn.pixabay.com/photo/2016/10/23/17/06/calendar-1763587_1280.png"} alt="Event Logo" width={40} height={40} />
+          <Avatar className='w-10 h-10 ml-2'>
+            <AvatarImage src={ticket.host.photo} />
+            <AvatarFallback>host</AvatarFallback>
+          </Avatar>
         </div>
       </div>
     </div>

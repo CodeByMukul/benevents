@@ -1,4 +1,5 @@
 import { formatDateTime } from "@/lib/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import DeleteConfirmation from "./DeleteConfirmation"
 import Image from "next/image"
 import { IEvent } from "@/types"
@@ -53,7 +54,11 @@ const Card = async({event,hasOrderLink,hidePrice}:CardProps) => {
         <p className="p-medium-16 md:p-medium-18 text-slate-500">
           Hosted By:
         </p>
-        <p className="p-medium-14 md:p-medium-16 text-gray-600">
+        <p className="flex items-center gap-1 p-medium-14 md:p-medium-16 text-gray-600">
+          <Avatar className='w-8 h-8'>
+            <AvatarImage src={event.host?.photo} />
+            <AvatarFallback>Host</AvatarFallback>
+          </Avatar>
           {event.host?.firstName} {event.host?.lastName}
         </p>
 
