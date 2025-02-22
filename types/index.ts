@@ -172,6 +172,7 @@ export interface IOrder {
   buyerId: string;
   buyer?: IUser;  
   status: string;
+  used: boolean;
 }
 
 export interface IEvent{

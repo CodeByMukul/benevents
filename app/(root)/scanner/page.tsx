@@ -66,7 +66,8 @@ export default function ScannerPage() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto my-10 p-4 bg-primary-50">
+    <div className="bg-dotted-pattern h-full">
+      <Card className="w-full max-w-md mx-auto my-10 p-4 bg-primary-50">
       <CardHeader>
         <CardTitle>QR Code Scanner</CardTitle>
         <CardDescription>Scan a QR code to verify ticket</CardDescription>
@@ -146,6 +147,8 @@ export default function ScannerPage() {
         )}
       </CardContent>
     </Card>
+</div>
+
   )
 }
 

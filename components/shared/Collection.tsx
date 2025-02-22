@@ -1,5 +1,4 @@
 import Card from "./Card";
-import { auth } from "@clerk/nextjs/server";
 import { IEvent } from "@/types";
 import Pagination from "./Pagination";
 type CollectionProps={
@@ -23,10 +22,6 @@ const Collection = async({
   collectionType,
   urlParamName,
 }:CollectionProps) => {
-// In your parent component
-const { sessionClaims } = await auth();
-const userId = sessionClaims?.sub;
-const username = sessionClaims?.username;
 
   return (
     <>

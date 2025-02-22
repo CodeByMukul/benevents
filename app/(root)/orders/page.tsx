@@ -61,8 +61,8 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
   });  return (
     <>
       <section className=" bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
-        <h3 className="wrapper h3-bold text-center sm:text-left ">Orders</h3>
-        <p className="p-regular-16 text-center sm:text-left wrapper text-primary-500">Total orders: {orders.length}</p>
+        <h3 className="wrapper h3-bold text-center sm:text-left ">Participants</h3>
+        <p className="p-regular-16 text-center sm:text-left wrapper text-primary-500">Total participants: {orders.length}</p>
       </section>
 
       <section className="wrapper mt-8">
@@ -73,13 +73,13 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
         <table className="w-full border-collapse border-t">
           <thead>
             <tr className="p-medium-14 border-b text-grey-500">
-              <th className="min-w-[250px] py-3 text-left">Order ID</th>
-              <th className="min-w-[200px] flex-1 py-3 pr-4 text-left">User Email</th>
+              <th className="min-w-[100px] py-3 text-left">Order ID</th>
+              <th className="min-w-[10px] py-3 text-left">Present</th>
+              <th className="min-w-[250px] flex-1 py-3 pr-4 text-left">User Email</th>
               <th className="min-w-[150px] py-3 text-left">Buyer</th>
               <th className="min-w-[100px] py-3 text-left">Booked</th>
               <th className="min-w-[100px] py-3 text-right">Event</th>
               <th className="min-w-[100px] py-3 text-right">Amount</th>
-
             </tr>
           </thead>
           <tbody>
@@ -97,7 +97,8 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
                       key={row.id}
                       className="p-regular-14 lg:p-regular-16 border-b "
                       style={{ boxSizing: 'border-box' }}>
-                      <td className="min-w-[250px] py-4 text-primary-500">{row.id}</td>
+                      <td className="min-w-[100px] py-4 text-primary-500">{row.id}</td>
+                      <td className="min-w-[100px] py-3 text-left">{row.used?"Yes":"No"}</td>
                       <td className="min-w-[200px] flex-1  flex gap-2 py-4 pr-6">
 
                         <Avatar className='w-6 h-6'>

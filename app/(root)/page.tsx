@@ -4,7 +4,7 @@ import Search from "@/components/shared/Search";
 import { Button } from "@/components/ui/button";
 import Collection from "@/components/shared/Collection";
 import Link from "next/link";
-import prisma from "@/lib/prisma"; 
+import prisma from "@/lib/prisma";
 
 export default async function Home({ searchParams }: { searchParams: Promise<any> }) {
   let { query, category, page } = await searchParams;
@@ -13,6 +13,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<any
 
   query = query?.toLowerCase() || "";
   category = category?.toLowerCase() || "";
+  if (query !== "") page = 1;
 
   // Count total events matching the filters (without pagination)
   const totalEvents = await prisma.event.count({
