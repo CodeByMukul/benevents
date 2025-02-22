@@ -74,6 +74,7 @@ const page = async ({ params, searchParams }: { params: Promise<{ id: string }>;
     <>
       <section className="flex justify-center bg-primary-50 bg-dotted-pattern bg-contain">
         <div className="grid grid-cols-1 md:grid-cols-2 2xl:max-w-7xl">
+          <div>
           <Image
             src={event.imageUrl||"https://cdn.pixabay.com/photo/2016/10/23/17/06/calendar-1763587_1280.png"}
             alt="img"
@@ -81,6 +82,8 @@ const page = async ({ params, searchParams }: { params: Promise<{ id: string }>;
             height={1000}
             className="h-full min-h-[300] object-cover object-center"
           />
+
+          </div>
           <div className="flex w-full gap-8 flex-col p-5 md:p-10">
             <div className="flex flex-col gap-6">
               <h2 className="h2-bold">{event.title}</h2>

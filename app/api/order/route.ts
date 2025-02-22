@@ -21,7 +21,16 @@ export async function POST(req: Request) {
     });
 
     if (!event) return NextResponse.json({ msg: "Event not found" }, { status: 400 });
+    
+    const orderExists = await prisma.order.findFirst({
+      where: {
+        eventId,
+        buyerId: sessionClaims.sub,
+        status: "completed"
+      }
+    })
 
+    if (orderExists) return NextResponse.json({ msg: "Order already exists" }, { status: 400 });
     // If the event is free, create a database order without Razorpay
     if (event.isFree) {
       const freeOrder = await prisma.order.create({
