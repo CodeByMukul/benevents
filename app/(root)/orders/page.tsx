@@ -75,7 +75,7 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
           <thead>
             <tr className="p-medium-14 border-b text-grey-500">
               <th className="min-w-[100px] py-3 text-left">Order ID</th>
-              <th className="min-w-[10px] py-3 text-left">Present</th>
+              <th className="min-w-[100px] py-3 text-left">Present</th>
               <th className="min-w-[250px] flex-1 py-3 pr-4 text-left">User Email</th>
               <th className="min-w-[150px] py-3 text-left">Buyer</th>
               <th className="min-w-[100px] py-3 text-left">Booked</th>
@@ -86,7 +86,7 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
           <tbody>
             {orders && orders.length === 0 ? (
               <tr className="border-b">
-                <td colSpan={5} className="py-4 text-center text-gray-500">
+                <td colSpan={7} className="py-4 text-center text-gray-500">
                   No orders found.
                 </td>
               </tr>

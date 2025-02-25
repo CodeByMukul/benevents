@@ -33,7 +33,11 @@ export const POST = async (req: NextRequest) => {
         }
 
         // 3. Success Response:
+        try{
         const updatedTicket = await prisma.order.update({where:{id:orderId},data:{used:true}});
+    }catch(e){
+      return NextResponse.json({ message: 'An error occurred during verification of ticket' },{status:500});
+    }
         return NextResponse.json({ success: true, message: 'Ticket is valid' },{status:200});
 
     } catch (error) {
