@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import Collection from "@/components/shared/Collection";
 import Link from "next/link";
@@ -23,7 +22,10 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
     select: { canCreateEvents: true, clerkId: true },
   });
 
+  let events=null;
+  let totalPages=0;
   // Fetch total event count for pagination (Organized Events)
+  if(user?.canCreateEvents){
   const totalEvents = await prisma.event.count({
     where: {
       host: { username: userId },
@@ -38,10 +40,10 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
     },
   });
 
-  const totalPages = Math.ceil(totalEvents / pageSize);
+  totalPages = Math.ceil(totalEvents / pageSize);
 
   // Fetch events organized by the user
-  const events = await prisma.event.findMany({
+  events = await prisma.event.findMany({
     where: {
       host: { username: userId },
       AND: [
@@ -58,6 +60,7 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
     take: pageSize,
     skip: (eventsPage - 1) * pageSize,
   });
+  }
 
   // Fetch total count of purchased events (My Tickets)
   const totalMyEvents = await prisma.order.count({
@@ -128,7 +131,7 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
           </div>
           <section className="wrapper my-8">
             <Collection
-              data={events}
+              data={events||[]}
               emptyTitle="No events hosted yet"
               emptyStateSubtext="Host Some Exciting Events!"
               collectionType="Events_Organized"

@@ -1,6 +1,8 @@
 import { NextResponse ,NextRequest} from 'next/server';
 import prisma from '@/lib/prisma';
+import {UTApi} from 'uploadthing/server';
 export const POST = async (req: NextRequest) => {
+  const utapi=new UTApi();
   const eventId = await req.json();
   try {
     const user=await prisma.user.findUnique({
@@ -14,9 +16,10 @@ export const POST = async (req: NextRequest) => {
         eventId:eventId.eventId
       }
     })
-        
-
+    const fileKey = delEvent.imageUrl?.split('/').pop(); 
+    await utapi.deleteFiles(fileKey||"");
     return NextResponse.json(delEvent);
+
   } catch (e) {
     // Improved error handling
     if (e instanceof Error) {
