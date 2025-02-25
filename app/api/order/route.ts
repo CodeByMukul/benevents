@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     const newOrder = await prisma.order.create({
       data: {
         rzpId: order.id,
-        totalAmount: order.amount.toString(),
+        totalAmount: event.price||"Error",
         eventId,
         buyerId: sessionClaims.sub
       }
