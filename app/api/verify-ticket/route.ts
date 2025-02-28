@@ -13,6 +13,7 @@ export const POST = async (req: NextRequest) => {
         // Replace this with your actual database query logic
         const ticket = await prisma.order.findUnique({
             where: { id:orderId,eventId , status:"completed"}, // Example composite key
+            include: { buyer: true }, // Include the event details if needed
         });
 
         if (!ticket) {
@@ -38,7 +39,7 @@ export const POST = async (req: NextRequest) => {
     }catch(e){
       return NextResponse.json({ message: 'An error occurred during verification of ticket' },{status:500});
     }
-        return NextResponse.json({ success: true, message: 'Ticket is valid' },{status:200});
+        return NextResponse.json({ success: true, message: 'Ticket is valid',ticket },{status:200});
 
     } catch (error) {
         console.error('API Error:', error);

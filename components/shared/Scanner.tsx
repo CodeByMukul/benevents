@@ -11,6 +11,7 @@ export default function ScannerPage({eventId}:{eventId:string}) {
   const [isScanning, setIsScanning] = useState(false) // Scanner visibility
   const [scanMessage, setScanMessage] = useState<string | null>(null)
   const [lastScanned, setLastScanned] = useState<string | null>(null) // Avoid duplicate scans
+  const [buyerName, setBuyerName] = useState<string | null>(null)
   const devices = useDevices()
 
   function getTracker() {
@@ -28,11 +29,10 @@ export default function ScannerPage({eventId}:{eventId:string}) {
 
   const handleScan = async (data: string) => {
     if (!data || data === lastScanned) return // Avoid duplicate scans
-
     try {
       const decryptedData = decryptJson(data)
       console.log(eventId)
-      if (decryptedData.eventId!=eventId){ setScanMessage("❌ Invalid Ticket");return;}
+      if(eventId)if (decryptedData.eventId!=eventId){ setScanMessage("❌ Invalid Ticket");setBuyerName(null);return;} //put eventId there as if it is admin then he will pass empty eventId and hence verifying if it is admin or not
       setScanMessage("🔄 Verifying ticket...") // Show loading state
       setLastScanned(data) // Store last scanned value
 
@@ -42,12 +42,16 @@ export default function ScannerPage({eventId}:{eventId:string}) {
 
       if (response && result.success) {
         setScanMessage("✅ Success! Ticket is valid.")
+        setBuyerName(result.ticket.buyer?.firstName+" "+result.ticket.buyer?.lastName|| "Unknown")
+        console.log(result.buyer)
       } else {
         setScanMessage(`❌ ${result.message || "Invalid ticket."}`)
+        setBuyerName(null)
       }
     } catch (error) {
       console.error("Scan error:", error)
       setScanMessage("❌ Error processing QR code.")
+      setBuyerName(null)
     }
   }
 
@@ -55,6 +59,7 @@ export default function ScannerPage({eventId}:{eventId:string}) {
     setIsScanning(false)
     setScanMessage(null) // Clear message when stopping scanning
     setLastScanned(null) // Reset last scanned QR
+    setBuyerName(null)
   }
 
   return (
@@ -128,6 +133,11 @@ export default function ScannerPage({eventId}:{eventId:string}) {
                 }`}
               >
                 {scanMessage}
+{buyerName && (
+                    <div className="mt-2 font-semibold">
+                      Buyer: {buyerName}
+                    </div>
+                  )}
               </div>
             )}
 
