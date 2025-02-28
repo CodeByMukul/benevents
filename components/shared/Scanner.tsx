@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { decryptJson } from "@/lib/utils"
 import axios from "axios"
-export default function ScannerPage() {
+export default function ScannerPage({eventId}:{eventId:string}) {
   const [deviceId, setDeviceId] = useState<string | undefined>(undefined)
   const [tracker, setTracker] = useState<string>("outline")
   const [isScanning, setIsScanning] = useState(false) // Scanner visibility
@@ -31,7 +31,8 @@ export default function ScannerPage() {
 
     try {
       const decryptedData = decryptJson(data)
-      if (decryptedData.eventId=="Invalid" ) throw new Error("Invalid QR Code Format")
+      console.log(eventId)
+      if (decryptedData.eventId!=eventId){ setScanMessage("❌ Invalid Ticket");return;}
       setScanMessage("🔄 Verifying ticket...") // Show loading state
       setLastScanned(data) // Store last scanned value
 
@@ -58,7 +59,7 @@ export default function ScannerPage() {
 
   return (
     <div className="bg-dotted-pattern h-full">
-      <Card className="w-full max-w-md mx-auto my-10 p-4 bg-primary-50">
+      <Card className="w-full max-w-md mx-auto  p-4 bg-primary-50">
       <CardHeader>
         <CardTitle>QR Code Scanner</CardTitle>
         <CardDescription>Scan a QR code to verify ticket</CardDescription>

@@ -1,32 +1,35 @@
-import Search  from '@/components/shared/Search'
+import Search from '@/components/shared/Search'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import prisma from '@/lib/prisma'
 import { formatDateTime, formatPrice } from '@/lib/utils'
 import { SearchParamProps } from '@/types'
-import { IEvent,IOrder } from '@/types'
+import { IOrder } from '@/types'
 import { auth } from '@clerk/nextjs/server'
 import { count } from 'console'
-
+import { redirect } from 'next/navigation'
 const Orders = async ({ searchParams }: SearchParamProps) => {
   const si = await searchParams
-  const eventId = (si?.eventId as string) ;
-  const query = (si?.query as string) ;
+  const eventId = (si?.eventId as string);
+  const query = (si?.query as string);
 
   const { sessionClaims } = await auth();
   const userId = sessionClaims?.username;
-  const user= await prisma.user.findUnique({
-    where: { username: userId ,canCreateEvents:true, events:{
-      some:{
-        eventId:eventId
+  const user = await prisma.user.findUnique({
+    where: {
+      username: userId, canCreateEvents: true, events: {
+        some: {
+          eventId: eventId
+        }
       }
-    }},
-    select: { events: true},
+    },
+    select: { events: true },
   });
-  if(!user)if(userId!="owner") return <p className="text-center text-red-500">Unauthorized</p>;
-  const orders : IOrder[]= await prisma.order.findMany({
+  if (!user) if (userId != "owner") redirect("/");
+  if (!user) if (userId != "owner") return <p className="text-center text-red-500">Unauthorized</p>;
+  const orders: IOrder[] = await prisma.order.findMany({
     where: {
       eventId: eventId ? eventId : undefined,
-      status:"completed",
+      status: "completed",
       OR: [
         {
           buyer: {
@@ -56,10 +59,10 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
     },
     include: {
       buyer: true, // Fetch user details
-      event: {include:{category:true}}, // Fetch event details
+      event: { include: { category: true } }, // Fetch event details
     },
     orderBy: { createdAt: "desc" },
-  });  return (
+  }); return (
     <>
       <section className=" bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <h3 className="wrapper h3-bold text-center sm:text-left ">Participants</h3>
@@ -92,33 +95,32 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
               </tr>
             ) : (
               <>
-                {orders &&
-                  orders.map((row: IOrder) => (
-                    <tr
-                      key={row.id}
-                      className="p-regular-14 lg:p-regular-16 border-b "
-                      style={{ boxSizing: 'border-box' }}>
-                      <td className="min-w-[100px] py-4 text-primary-500">{row.id}</td>
-                      <td className="min-w-[100px] py-3 text-left">{row.used?"Yes":"No"}</td>
-                      <td className="min-w-[200px] flex-1  flex gap-2 py-4 pr-6">
+                {orders?.map((row: IOrder) => (
+                  <tr
+                    key={row.id}
+                    className="p-regular-14 lg:p-regular-16 border-b "
+                    style={{ boxSizing: 'border-box' }}>
+                    <td className="min-w-[100px] py-4 text-primary-500">{row.id}</td>
+                    <td className="min-w-[100px] py-3 text-left">{row.used ? "Yes" : "No"}</td>
+                    <td className="min-w-[200px] flex-1  flex gap-2 py-4 pr-6">
 
-                        <Avatar className='w-6 h-6'>
-                         <AvatarImage src={row.buyer?.photo} />
-                          <AvatarFallback>Pic</AvatarFallback>
-                        </Avatar>
+                      <Avatar className='w-6 h-6'>
+                        <AvatarImage src={row.buyer?.photo} />
+                        <AvatarFallback>Pic</AvatarFallback>
+                      </Avatar>
                       {row.buyer?.email}</td>
-                      <td className="min-w-[150px] py-4">{row.buyer?.firstName} {row.buyer?.lastName}</td>
-                      <td className="min-w-[100px] py-4">
-                        {formatDateTime(row.createdAt).dateTime}
-                      </td>
-                      <td className="min-w-[100px] py-4 text-right">
-                          {row.event?.title}
-                      </td>
-                      <td className="min-w-[100px] py-4 text-right">
-                        {formatPrice(row.totalAmount||"")}
-                      </td>
-                    </tr>
-                  ))}
+                    <td className="min-w-[150px] py-4">{row.buyer?.firstName} {row.buyer?.lastName}</td>
+                    <td className="min-w-[100px] py-4">
+                      {formatDateTime(row.createdAt).dateTime}
+                    </td>
+                    <td className="min-w-[100px] py-4 text-right">
+                      {row.event?.title}
+                    </td>
+                    <td className="min-w-[100px] py-4 text-right">
+                      {formatPrice(row.totalAmount || "")}
+                    </td>
+                  </tr>
+                ))}
               </>
             )}
           </tbody>

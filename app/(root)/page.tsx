@@ -14,7 +14,6 @@ export default async function Home({ searchParams }: { searchParams: Promise<any
   query = query?.toLowerCase() || "";
   category = category?.toLowerCase() || "";
   if (query !== "") page = 1;
-
   // Count total events matching the filters (without pagination)
   const totalEvents = await prisma.event.count({
     where: {

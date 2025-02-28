@@ -66,6 +66,7 @@ const Card = async({event,hasOrderLink,hidePrice}:CardProps) => {
 
       </Link>
         {hasOrderLink && (
+          <div className="flex justify-between">
           <Link href={`/orders?eventId=${event.eventId}`} className="flex gap-2 ml-4 mb-2">
             <p className=" text-primary-500">
               Order Details
@@ -74,6 +75,16 @@ const Card = async({event,hasOrderLink,hidePrice}:CardProps) => {
 
             </Image>
           </Link>
+
+          <Link href={`/scanner?eventId=${event.eventId}`} className="flex gap-2 mr-4 mb-2">
+            <p className=" text-primary-500">
+              Scan Ticket 
+            </p>
+            <Image src="/assets/icons/arrow.svg" alt="search" width={10} height={10}>
+
+            </Image>
+          </Link>
+        </div>
         )}
     </div>
   )
