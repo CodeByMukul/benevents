@@ -22,11 +22,11 @@ type User = {
 };
 
 type SearchParamsProps = {
-  searchParams: {
+  searchParams: Promise<{
     eventsPage?: string;
     myEventsPage?: string;
     query?: string;
-  };
+  }>;
 };
 
 type TicketsProps = {
@@ -147,8 +147,8 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
   const userId = sessionClaims?.username as string;
 
   if (!userId) return <p className="text-center text-red-500">Unauthorized</p>;
-
-  const { eventsPage: eventsPageParam = "1", myEventsPage: myEventsPageParam = "1", query = "" } = searchParams;
+  const searchParamss=await searchParams;
+  const { eventsPage: eventsPageParam = "1", myEventsPage: myEventsPageParam = "1", query = "" } = searchParamss;
   const eventsPage = Math.max(1, Number(eventsPageParam) || 1);
   const myEventsPage = Math.max(1, Number(myEventsPageParam) || 1);
   const pageSize = 3;

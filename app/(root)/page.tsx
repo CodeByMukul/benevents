@@ -93,11 +93,12 @@ const EventsCollection = async ({ query, category, page, perPage }: EventsProps)
 };
 
 // Main Home component - prioritizing initial render speed
-export default async function Home({ searchParams }: { searchParams: SearchParamsType }) {
+export default async function Home({ searchParams}: { searchParams: Promise<SearchParamsType> }) {
+  const searchParamss=await searchParams;
   // Process search params with defaults
-  const query = searchParams.query?.toLowerCase() || "";
-  const category = searchParams.category?.toLowerCase() || "";
-  const page = Number(searchParams.page) || 1;
+  const query = searchParamss.query?.toLowerCase() || "";
+  const category = searchParamss.category?.toLowerCase() || "";
+  const page = Number(searchParamss.page) || 1;
   const perPage = 6; // Number of events per page
 
   return (
