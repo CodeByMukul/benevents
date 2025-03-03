@@ -20,57 +20,52 @@ const page = async ({ params, searchParams }: { params: Promise<{ id: string }>;
     where: { eventId: id },
     include: { host: true, category: true,orders:{where:{status:"completed"}}},
   });
-
   if (!event) {
     return <p className="text-center p-bold-20">Event not found</p>;
   }
 
-  // Fetch total counts for pagination
-  const totalRelatedEvents = await prisma.event.count({
-    where: {
-      startDateTime: { gte: new Date() },
-      host: { username: event.host.username },
-      NOT: { eventId: event.eventId },
-    },
-  });
+  const [totalRelatedEvents, totalCategoryEvents, relatedEvents, categoryEvents] = await Promise.all([
+    prisma.event.count({
+      where: {
+        startDateTime: { gte: new Date() },
+        host: { username: event?.host?.username },
+        NOT: { eventId: id },
+      },
+    }),
+    prisma.event.count({
+      where: {
+        startDateTime: { gte: new Date() },
+        categoryId: event?.categoryId,
+        NOT: { eventId: id },
+      },
+    }),
+    prisma.event.findMany({
+      where: {
+        startDateTime: { gte: new Date() },
+        host: { username: event?.host?.username },
+        NOT: { eventId: id },
+      },
+      include: { host: true, category: true },
+      orderBy: { startDateTime: "asc" },
+      take: pageSize,
+      skip: (relatedPageNum - 1) * pageSize,
+    }),
+    prisma.event.findMany({
+      where: {
+        startDateTime: { gte: new Date() },
+        categoryId: event?.categoryId,
+        NOT: { eventId: id },
+      },
+      include: { host: true, category: true },
+      orderBy: { startDateTime: "asc" },
+      take: pageSize,
+      skip: (categoryPageNum - 1) * pageSize,
+    }),
+  ]);
 
-  const totalCategoryEvents = await prisma.event.count({
-    where: {
-      startDateTime: { gte: new Date() },
-      categoryId: event.categoryId,
-      NOT: { eventId: event.eventId },
-    },
-  });
 
   const totalRelatedPages = Math.ceil(totalRelatedEvents / pageSize);
   const totalCategoryPages = Math.ceil(totalCategoryEvents / pageSize);
-
-  // Fetch events by the same host
-  const relatedEvents = await prisma.event.findMany({
-    where: {
-      startDateTime: { gte: new Date() },
-      host: { username: event.host.username },
-      NOT: { eventId: event.eventId },
-    },
-    include: { host: true, category: true },
-    orderBy: { startDateTime: "asc" },
-    take: pageSize,
-    skip: (relatedPageNum - 1) * pageSize,
-  });
-
-  // Fetch events in the same category
-  const categoryEvents = await prisma.event.findMany({
-    where: {
-      startDateTime: { gte: new Date() },
-      categoryId: event.categoryId,
-      NOT: { eventId: event.eventId },
-    },
-    include: { host: true, category: true },
-    orderBy: { startDateTime: "asc" },
-    take: pageSize,
-    skip: (categoryPageNum - 1) * pageSize,
-  });
-
   return (
     <>
       <section className="flex justify-center bg-primary-50 bg-dotted-pattern bg-contain">

@@ -4,64 +4,47 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import Search from "@/components/shared/Search";
+import { Suspense } from "react";
 
-const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: string, myEventsPage?: string, query?: string }> }) => {
-  const { sessionClaims } = await auth();
-  const userId = sessionClaims?.username;
+// Loading components for better UX during data fetching
+const TicketsLoading = () => (
+  <div className="w-full h-32 bg-gray-200 animate-pulse rounded-md" />
+);
 
-  if (!userId) return <p className="text-center text-red-500">Unauthorized</p>;
+const EventsLoading = () => (
+  <div className="w-full h-32 bg-gray-200 animate-pulse rounded-md" />
+);
 
-  const { eventsPage: eventsPageParam = "1", myEventsPage: myEventsPageParam = "1", query = "" } = await searchParams;
-  const eventsPage = Math.max(1, Number(eventsPageParam) || 1);
-  const myEventsPage = Math.max(1, Number(myEventsPageParam) || 1);
-  const pageSize = 3;
+// Define types based on the original code
+type User = {
+  canCreateEvents: boolean;
+  clerkId: string;
+};
 
-  // Fetch the logged-in user
-  const user = await prisma.user.findUnique({
-    where: { username: userId },
-    select: { canCreateEvents: true, clerkId: true },
-  });
+type SearchParamsProps = {
+  searchParams: {
+    eventsPage?: string;
+    myEventsPage?: string;
+    query?: string;
+  };
+};
 
-  let events=null;
-  let totalPages=0;
-  // Fetch total event count for pagination (Organized Events)
-  if(user?.canCreateEvents){
-  const totalEvents = await prisma.event.count({
-    where: {
-      host: { username: userId },
-      AND: [
-        {
-          OR: [
-            { title: { contains: query, mode: "insensitive" } },
-            { host: { firstName: { contains: query, mode: "insensitive" } } },
-          ],
-        },
-      ],
-    },
-  });
+type TicketsProps = {
+  userId: string;
+  pageSize: number;
+  myEventsPage: number;
+  user: User | null;
+};
 
-  totalPages = Math.ceil(totalEvents / pageSize);
+type EventsProps = {
+  userId: string;
+  pageSize: number;
+  eventsPage: number;
+  query: string;
+};
 
-  // Fetch events organized by the user
-  events = await prisma.event.findMany({
-    where: {
-      host: { username: userId },
-      AND: [
-        {
-          OR: [
-            { title: { contains: query, mode: "insensitive" } },
-            { host: { firstName: { contains: query, mode: "insensitive" } } },
-          ],
-        },
-      ],
-    },
-    include: { host: true, category: true },
-    orderBy: { createdAt: "desc" },
-    take: pageSize,
-    skip: (eventsPage - 1) * pageSize,
-  });
-  }
-
+// Separate components for data fetching
+const MyTickets = async ({ userId, pageSize, myEventsPage, user }: TicketsProps) => {
   // Fetch total count of purchased events (My Tickets)
   const totalMyEvents = await prisma.order.count({
     where: {
@@ -94,8 +77,91 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
   const myEvents = myOrders.map((order) => order.event) || [];
 
   return (
+    <Collection
+      data={myEvents}
+      emptyTitle="No events purchased yet"
+      emptyStateSubtext="Explore and buy tickets to amazing events!"
+      collectionType="My_Tickets"
+      limit={pageSize}
+      page={myEventsPage}
+      urlParamName="myEventsPage"
+      totalPages={totalMyEventsPages}
+    />
+  );
+};
+
+const OrganizedEvents = async ({ userId, pageSize, eventsPage, query }: EventsProps) => {
+  // Fetch total event count for pagination (Organized Events)
+  const totalEvents = await prisma.event.count({
+    where: {
+      host: { username: userId },
+      AND: [
+        {
+          OR: [
+            { title: { contains: query, mode: "insensitive" } },
+            { host: { firstName: { contains: query, mode: "insensitive" } } },
+          ],
+        },
+      ],
+    },
+  });
+
+  const totalPages = Math.ceil(totalEvents / pageSize);
+
+  // Fetch events organized by the user
+  const events = await prisma.event.findMany({
+    where: {
+      host: { username: userId },
+      AND: [
+        {
+          OR: [
+            { title: { contains: query, mode: "insensitive" } },
+            { host: { firstName: { contains: query, mode: "insensitive" } } },
+          ],
+        },
+      ],
+    },
+    include: { host: true, category: true },
+    orderBy: { createdAt: "desc" },
+    take: pageSize,
+    skip: (eventsPage - 1) * pageSize,
+  });
+
+  return (
+    <Collection
+      data={events || []}
+      emptyTitle="No events hosted yet"
+      emptyStateSubtext="Host Some Exciting Events!"
+      collectionType="Events_Organized"
+      limit={pageSize}
+      page={eventsPage}
+      urlParamName="eventsPage"
+      totalPages={totalPages}
+    />
+  );
+};
+
+// Main Page Component - optimized with streaming
+const Page = async ({ searchParams }: SearchParamsProps) => {
+  const { sessionClaims } = await auth();
+  const userId = sessionClaims?.username as string;
+
+  if (!userId) return <p className="text-center text-red-500">Unauthorized</p>;
+
+  const { eventsPage: eventsPageParam = "1", myEventsPage: myEventsPageParam = "1", query = "" } = searchParams;
+  const eventsPage = Math.max(1, Number(eventsPageParam) || 1);
+  const myEventsPage = Math.max(1, Number(myEventsPageParam) || 1);
+  const pageSize = 3;
+
+  // Fetch just the user permissions - lightweight query
+  const user = await prisma.user.findUnique({
+    where: { username: userId },
+    select: { canCreateEvents: true, clerkId: true },
+  });
+
+  return (
     <>
-      {/* My Tickets Section */}
+      {/* My Tickets Section - Fast initial layout */}
       <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <div className="wrapper flex items-center justify-center sm:justify-between">
           <h3 className="h3-bold text-center md:text-left">My Tickets</h3>
@@ -104,20 +170,13 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
           </Button>
         </div>
         <section className="wrapper my-8">
-          <Collection
-            data={myEvents}
-            emptyTitle="No events purchased yet"
-            emptyStateSubtext="Explore and buy tickets to amazing events!"
-            collectionType="My_Tickets"
-            limit={pageSize}
-            page={myEventsPage}
-            urlParamName="myEventsPage"
-            totalPages={totalMyEventsPages}
-          />
+          <Suspense fallback={<TicketsLoading />}>
+            <MyTickets userId={userId} pageSize={pageSize} myEventsPage={myEventsPage} user={user} />
+          </Suspense>
         </section>
       </section>
 
-      {/* Events Organized Section */}
+      {/* Events Organized Section - Conditionally rendered */}
       {user?.canCreateEvents && (
         <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
           <div className="wrapper flex items-center justify-center sm:justify-between">
@@ -130,16 +189,9 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
             <Search placeholder="Search title..." />
           </div>
           <section className="wrapper my-8">
-            <Collection
-              data={events||[]}
-              emptyTitle="No events hosted yet"
-              emptyStateSubtext="Host Some Exciting Events!"
-              collectionType="Events_Organized"
-              limit={pageSize}
-              page={eventsPage}
-              urlParamName="eventsPage"
-              totalPages={totalPages}
-            />
+            <Suspense fallback={<EventsLoading />}>
+              <OrganizedEvents userId={userId} pageSize={pageSize} eventsPage={eventsPage} query={query} />
+            </Suspense>
           </section>
         </section>
       )}
@@ -147,5 +199,4 @@ const page = async ({ searchParams }: { searchParams: Promise<{ eventsPage?: str
   );
 };
 
-export default page;
-
+export default Page;
