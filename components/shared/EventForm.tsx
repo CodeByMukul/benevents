@@ -21,7 +21,6 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { IEvent } from "@/types";
 const EventForm = ({clerkId,type,event}:{clerkId:string,type:"Create"|"Update",event?:IEvent}) => {
-  const { isSignedIn, user, isLoaded } = useUser()
   const [files, setFiles] = useState<File[]>([])
   const initialValues=event&&type==="Update"?event:eventDefaultValues;
   const form = useForm<IEvent>({
@@ -39,7 +38,7 @@ const EventForm = ({clerkId,type,event}:{clerkId:string,type:"Create"|"Update",e
     }
     if(type==='Create'){
       try{
-        const newEvent=await axios.post('/api/event',{...values,imageUrl:uploadedImageUrl,id:user?.id})
+        const newEvent=await axios.post('/api/event',{...values,imageUrl:uploadedImageUrl,id:clerkId})
         if(newEvent.status=200){
           form.reset();
           router.push(`/events/${newEvent.data.eventId}`)
@@ -51,7 +50,7 @@ const EventForm = ({clerkId,type,event}:{clerkId:string,type:"Create"|"Update",e
     if(type==="Update"){
       if(!event?.eventId)router.back();
       try{
-        const newEvent=await axios.put('/api/event',{...values,imageUrl:uploadedImageUrl,id:event?.host?.clerkId,eventId:event?.eventId})
+        const newEvent=await axios.put('/api/event',{...values,imageUrl:uploadedImageUrl,clerkId,eventId:event?.eventId})
         if(newEvent.status=200){
           form.reset();
           router.push(`/events/${newEvent.data.eventId}`)

@@ -6,7 +6,7 @@ import { SearchParamProps } from '@/types'
 import { IOrder } from '@/types'
 import { auth } from '@clerk/nextjs/server'
 import { count } from 'console'
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 const Orders = async ({ searchParams }: SearchParamProps) => {
   const si = await searchParams
   const eventId = (si?.eventId as string);
@@ -24,8 +24,8 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
     },
     select: { events: true },
   });
-  if (!user) if (userId != "owner") redirect("/");
-  if (!user) if (userId != "owner") return <p className="text-center text-red-500">Unauthorized</p>;
+  // if (!user) if (userId != "owner") redirect("/");
+  if (!user) if (userId != "owner") return notFound();
   const orders: IOrder[] = await prisma.order.findMany({
     where: {
       eventId: eventId ? eventId : undefined,

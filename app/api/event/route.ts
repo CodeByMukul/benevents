@@ -13,7 +13,7 @@ export const POST = async (req: NextRequest) => {
         clerkId:id
       }
     })
-    if(!user?.canCreateEvents)return NextResponse.json({msg:"Permission nahi hai puch ke kra kr"},{status:403});
+    if(id==""||!user?.canCreateEvents)return NextResponse.json({msg:"Permission nahi hai puch ke kra kr"},{status:403});
     const newEvent = await prisma.event.create({
       data: {
         ...eventData,
@@ -45,17 +45,26 @@ export const POST = async (req: NextRequest) => {
 export const PUT= async (req: NextRequest) => {
   const prisma=new PrismaClient();
   const values = await req.json();
-  console.log("Received values:", values);
   if(values.isFree==true)values.price="0";
 
-  const { id,categoryId, ...eventData } = values; // Destructure to get user ID and event data
+  const { clerkId,id,categoryId, ...eventData } = values; // Destructure to get user ID and event data
   try {
     const user=await prisma.user.findUnique({
       where:{
-        clerkId:id
+        clerkId,
+        OR:[{
+          isAdmin:true
+        },
+       {  events:{
+          some:{
+            eventId:values.eventId
+          }
+        } }
+        ],
       }
     })
-    if(!user?.canCreateEvents)return NextResponse.json({msg:"Permission nahi hai puch ke kra kr"},{status:403});
+    console.log(eventData)
+    if(!user)return NextResponse.json({msg:"Permission nahi hai puch ke kra kr"},{status:403});
     const changeEvent = await prisma.event.update({
       where:{
         eventId:values.eventId
@@ -65,11 +74,6 @@ export const PUT= async (req: NextRequest) => {
         category:{
           connect:{id:categoryId}
         },
-        host:{
-          connect:{
-            clerkId:id
-          }
-        }
       }
     })
 

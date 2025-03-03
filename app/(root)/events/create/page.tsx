@@ -1,19 +1,20 @@
 import EventForm from "@/components/shared/EventForm"
 import { auth } from "@clerk/nextjs/server"
 import prisma from "@/lib/prisma";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 const page = async() => {
    const {sessionClaims}=await auth();
     const clerkId=sessionClaims?.sub ;
     try{
       if(clerkId){
     const user=await prisma.user.findUnique({where:{clerkId}})
-    if(!user||!user.canCreateEvents)redirect('/')
+    if(!user||!user.canCreateEvents)return notFound()
       }else{
-        redirect('/')
+        return notFound()
       }
     }catch(e){
-      redirect('/')
+    console.log(e)
+        return notFound()
     }
   return (
   <>
