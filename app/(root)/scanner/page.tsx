@@ -24,7 +24,7 @@ export default async function ScannerPage( {searchParams}: SearchParamProps) {
   if(!canScan) return <p className="text-center text-red-500">Unauthorized</p>;
   }
   return (
-    <Scanner eventId={eventId as string}/>
+    <Scanner eventId={eventId as string} secretKey={process.env.SECRET_KEY_ENCRYPTION!}/>
   )
 }
 

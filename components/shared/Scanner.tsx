@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { decryptJson } from "@/lib/utils"
 import axios from "axios"
-export default function ScannerPage({eventId}:{eventId:string}) {
+export default function ScannerPage({eventId,secretKey}:{eventId:string,secretKey:string}) {
   const [deviceId, setDeviceId] = useState<string | undefined>(undefined)
   const [tracker, setTracker] = useState<string>("outline")
   const [isScanning, setIsScanning] = useState(false) // Scanner visibility
@@ -30,8 +30,7 @@ export default function ScannerPage({eventId}:{eventId:string}) {
   const handleScan = async (data: string) => {
     if (!data || data === lastScanned) return // Avoid duplicate scans
     try {
-      const decryptedData = decryptJson(data)
-      console.log(eventId)
+      const decryptedData = decryptJson(data,secretKey)
       if(eventId)if (decryptedData.eventId!=eventId){ setScanMessage("❌ Invalid Ticket");setBuyerName(null);return;} //put eventId there as if it is admin then he will pass empty eventId and hence verifying if it is admin or not
       setScanMessage("🔄 Verifying ticket...") // Show loading state
       setLastScanned(data) // Store last scanned value
@@ -43,7 +42,6 @@ export default function ScannerPage({eventId}:{eventId:string}) {
       if (response && result.success) {
         setScanMessage("✅ Success! Ticket is valid.")
         setBuyerName(result.ticket.buyer?.firstName+" "+result.ticket.buyer?.lastName|| "Unknown")
-        console.log(result.buyer)
       } else {
         setScanMessage(`❌ ${result.message || "Invalid ticket."}`)
         setBuyerName(null)
