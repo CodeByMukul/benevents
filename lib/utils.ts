@@ -6,7 +6,7 @@ import { UrlQueryParams, RemoveUrlQueryParams } from '@/types'
 
 import CryptoJS from "crypto-js";
 
-const secretKey =process.env.SECRET_KEY_ENCRYPTION||"ajao bhai event me "; 
+const secretKey =process.env.NEXT_PUBLIC_SECRET_KEY_ENCRYPTION!; 
 
 export function decryptJson(data: string): {eventId:string,orderId:string} {
   try{
