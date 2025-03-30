@@ -15,7 +15,7 @@ const Dropdown = ({value,onChangeHandler}:{value?:string, onChangeHandler?:()=>v
     name: string;
   }
   const [categories, setCategories] = useState<ICategory[]>([{
-    name:"test",id:"1"
+    name:"loading...",id:"1"
   }])
   const [newCategory, setNewCategory] = useState("")
   const handleAddCategory=()=>{

@@ -189,8 +189,10 @@ export interface IEvent{
     "isFree": boolean;
     "url": string|null;
     "categoryId": string;
-    "host"?:IUser 
-    ,
+    "host"?:IUser ,
+    registrationStart: Date,
+    registrationEnd: Date,
+    
     "category": {
         "id": string;
         "name": string;
