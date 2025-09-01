@@ -5,8 +5,9 @@ import { formatDateTime, formatPrice } from '@/lib/utils'
 import { SearchParamProps } from '@/types'
 import { IOrder } from '@/types'
 import { auth } from '@clerk/nextjs/server'
-import { count } from 'console'
 import { notFound, redirect } from 'next/navigation'
+import ExportButton from '@/components/shared/ExportButton' 
+
 const Orders = async ({ searchParams }: SearchParamProps) => {
   const si = await searchParams
   const eventId = (si?.eventId as string);
@@ -24,8 +25,9 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
     },
     select: { events: true },
   });
-  // if (!user) if (userId != "owner") redirect("/");
+
   if (!user) if (userId != "owner") return notFound();
+
   const orders: IOrder[] = await prisma.order.findMany({
     where: {
       eventId: eventId ? eventId : undefined,
@@ -58,19 +60,22 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
       ],
     },
     include: {
-      buyer: true, // Fetch user details
-      event: { include: { category: true } }, // Fetch event details
+      buyer: true,
+      event: { include: { category: true } },
     },
     orderBy: { createdAt: "desc" },
-  }); return (
+  });
+
+  return (
     <>
       <section className=" bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <h3 className="wrapper h3-bold text-center sm:text-left ">Participants</h3>
         <p className="p-regular-16 text-center sm:text-left wrapper text-primary-500">Total participants: {orders.length}</p>
       </section>
 
-      <section className="wrapper mt-8">
+      <section className="wrapper mt-8 flex justify-between items-center">
         <Search placeholder="Search buyer name..." />
+        <ExportButton orders={orders}  />
       </section>
 
       <section className="wrapper overflow-x-auto">
